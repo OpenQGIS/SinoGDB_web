@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sino-GDB 「九州」地理数据库</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: white;
+      min-height: 100vh;
+      background: url("./img/0-4k固定底图.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      position: relative;
+      transition: background-image 0.4s ease;
+    }
+
+    .carousel-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.5;
+      z-index: 0;
+      transition: opacity 0.4s ease, background-image 0.4s ease;
+    }
+
+    .overlay {
+      position: relative;
+      z-index: 1;
+      background-color: rgba(0, 0, 0, 0.5);
+      min-height: 100vh;
+      padding-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      position: absolute;
+      top: 2rem;
+      left: 3rem;
+      text-align: left;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.2rem;
+    }
+
+    header a {
+      font-size: 1.2rem;
+      color: #80cc2a;
+      text-decoration: none;
+    }
+
+    .labels {
+      position: absolute;
+      top: 30%;
+      left: 3rem;
+      transform: translateY(-50%);
+      font-size: 1.1rem;/* 数据库使用帮助的字号大小*/
+      line-height: 1.9;/* 数据库使用帮助的行间距 */
+    }
+
+    .labels p a {
+      color: rgb(255, 255, 255);
+      text-decoration: none;
+    }
+
+    .datasets {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 2rem;
+      padding: 2rem 1rem;
+      width: 100%;
+      align-items: end; /* 新增：使卡片底部对齐 */
+    }
+
+    .card-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transform-origin: center bottom;
+      margin: 5px;
+    }
+
+    .card-wrapper .en-name,
+    .card-wrapper .date {
+      white-space: nowrap; /* 防止文本换行 */
+      overflow: hidden; /* 隐藏溢出文本 */
+      text-overflow: ellipsis; /* 显示省略号 */
+      width: 100%; /* 确保宽度限制 */
+    }
+
+    .card-wrapper .cn-name {
+      white-space: nowrap;    /* 禁止换行 */
+      overflow: visible;     /* 溢出可见 */
+      text-overflow: clip;   
+      width: 100%;
+    }
+
+    .card-wrapper:hover {
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
+    .card-wrapper:active {
+      transform: scale(0.95);
+    }
+
+    .dataset {
+      background-color: #80cc2a;
+      border-radius: 16px;
+      position: relative;
+      width: 60px;
+      height: 60px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.4s ease;
+    }
+
+    .dataset img {
+      filter: brightness(0) invert(1);
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
+
+    .name-version-container .version {
+      font-size: 1.1rem; /* 版本号字体大小 */
+      font-weight: 700;
+      color: #80cc28;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 6px;
+      padding: 0 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      white-space: nowrap;
+    }
+
+    .card-wrapper .en-name {
+      font-size: 1rem;
+      opacity: 0.9;
+      color: #ccc;
+      font-weight: 600; /* 标准加粗数值 */
+      margin-bottom: 0.2rem;
+    }
+
+    .card-wrapper .cn-name {
+      font-size: 1.5rem;
+      font-weight: 400; /* 标准加粗数值 */
+      margin-bottom: 1rem;
+    }
+
+    .name-version-container .cn-name {
+      font-size: 1.3rem; /* 中文名字体大小 */
+      font-weight: 400;  /* 保持原字重 */
+      margin-bottom: 0;   /* 取消底部间距 */
+    }
+
+    .name-version-container {
+      display: flex;
+      align-items: baseline; /* 基线对齐，确保文字底部对齐 */
+      justify-content: center; /* 水平居中 */
+      gap: -1rem; /* 中文名和版本号的间距 */
+      margin-bottom: 1rem; /* 保持原底部间距 */
+      width: 100%;
+    }
+
+    .card-wrapper .date {
+      font-size: 1.3rem;
+      margin-top: 0.42rem;
+      color: #80cc28;
+      opacity: 0.9;
+      font-weight: bold;
+    }
+
+    .dataset:hover {
+      box-shadow: 0 0 15px rgba(128, 204, 42, 0.6);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 15px 1rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      line-height: 0;
+    }
+    .footer img {
+      width: 360px;
+      height: auto;
+      vertical-align: middle;
+    }
+
+    .hint-bubble {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.85);
+        color: #80cc28;
+        padding: 0.8rem 0.6rem;
+        border-radius: 8px;
+        font-size: 1.2rem;/* 点击弹出窗口字号大小 */
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    @keyframes fadeOut {
+        0% { opacity: 1; }
+        70% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: rgba(0,0,0,0.9);
+      padding: 2rem;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      border: 1px solid #80cc28;
+      position: relative;
+    }
+
+    .modal-content ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .modal-content li {
+      margin: 0.8rem 0;
+      line-height: 1.4;
+    }
+
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      color: #80cc28;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 1400px) , (max-height: 585px){
+      header, .labels {
+        position: static;
+        transform: none;
+        text-align: center;
+        margin: 0 auto;
+        padding: 1rem 1rem 0;
+      }
+
+      .overlay {
+        padding-top: 1rem;
+        padding-bottom: 80px;
+      }
+      
+      /* 新增页脚适配 */
+      .footer {
+        position: relative;
+        bottom: auto;
+        margin-top: auto; 
+        padding: 15px 1rem 30px; /* 底部增加更多间距 */
+      }
+
+      /* 新增间距调整 */
+      header {
+        padding-bottom: 1rem;
+      }
+      .labels {
+        margin-bottom: 1.5rem;
+      }
+    @media (max-width: 480px) {
+      .datasets {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .footer img {
+        width: 160px;
+      }
+      .modal-content {
+        width: 90%;
+        padding: 1.5rem;
+      }
+    }
+
+    #shareButton {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    #shareButton:hover {
+      color: #80cc28;
+    }
+
+    .labels p:nth-child(3) {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.9; }
+      50% { opacity: 0.6; }
+      100% { opacity: 0.9; }
+    }
+
+  </style>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      const cards = document.querySelectorAll('.card-wrapper');
+      const bgList = [
+        '4k1空中系统', '4k2建筑', '4k3用地',
+        '4k4电力', '4k5铁路', '4k6道路', '4k7交通', '4k8水系'
+      ];
+
+      const urlMap = {
+        '4k1空中系统' : './img/4k1机场跑道.png',
+        '4k2建筑' : './img/4k2建筑.png',
+        '4k3用地' : './img/4k3用地.png',
+        '4k4电力' : './img/4k4电力.png',
+        '4k5铁路' : './img/4k5铁路.png',
+        '4k6道路' : './img/4k6道路.png',
+        '4k7交通' : './img/4k7交通.png',
+        '4k8水系' : './img/4k8水系.png',
+        'OMap-GeoDB' : './img/OMap-GeoDB.png',
+        '0-4k固定底图': './img/0-4k固定底图.png'
+      };
+
+      const carouselLayer = document.createElement('div');
+      carouselLayer.className = 'carousel-layer';
+      document.body.appendChild(carouselLayer);
+
+      const preloadImg = img => new Image().src = urlMap[img];
+      bgList.forEach(preloadImg);
+      preloadImg('0-4k固定底图');
+
+      let currentIndex = 0;
+      let intervalId = null;
+      const duration = 2000;
+
+      function updateCarousel() {
+        currentIndex = (currentIndex + 1) % bgList.length;
+        carouselLayer.style.backgroundImage = `url("${urlMap[bgList[currentIndex]]}")`;
+      }
+
+      function startCarousel() {
+        if (!intervalId) {
+          intervalId = setInterval(updateCarousel, duration);
+          updateCarousel();
+        }
+      }
+
+      function stopCarousel() {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+
+      const bgMapping = {
+        'AirSystem': '4k1空中系统',
+        'Buildings': '4k2建筑',
+        'LandSeries': '4k3用地',
+        'Power': '4k4电力',
+        'Railways': '4k5铁路',
+        'Roads': '4k6道路',
+        'Transport': '4k7交通',
+        'WaterDam': '4k8水系'
+      };
+
+      cards.forEach(card => {
+        const enName = card.querySelector('.en-name').textContent;
+        const key = enName.replace('oData-', '').trim();
+
+        card.addEventListener('mouseenter', () => {
+          stopCarousel();
+          carouselLayer.style.opacity = '0';
+          body.style.backgroundImage = `url("${urlMap['0-4k固定底图']}") , url("${urlMap[bgMapping[key]]}")`;
+          body.style.backgroundBlendMode = 'overlay';
+        });
+
+        card.addEventListener('mouseleave', () => {
+          carouselLayer.style.opacity = '0.5';
+          body.style.backgroundImage = `url("${urlMap['0-4k固定底图']}")`;
+          startCarousel();
+        });
+      });
+
+      document.querySelectorAll('.card-wrapper').forEach(card => {
+        card.addEventListener('click', function () {
+            const targetUrl = this.dataset.url;
+            if (!targetUrl) {
+                const bubble = document.createElement('div');
+                bubble.className = 'hint-bubble';
+             bubble.textContent = '筹备中…';
+             this.appendChild(bubble);
+                setTimeout(() => {
+                    bubble.remove();
+                }, 800);
+             return;
+            }
+            window.open(targetUrl, '_blank');
+          });
+        });
+
+
+
+            // 两个模态框元素
+      const copyrightModal = document.getElementById('copyrightModal');
+      const downloadModal = document.getElementById('downloadModal');
+
+      // 让公众号链接不跳转
+      const wechatLink = document.getElementById('wechatLink');
+      if (wechatLink) wechatLink.addEventListener('click', e => e.preventDefault());
+
+      // 绑定“版权说明”按钮
+      const copyrightBtn = document.getElementById('copyrightBtn');
+      if (copyrightBtn) {
+        copyrightBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (copyrightModal) copyrightModal.style.display = 'flex';
+        });
+      }
+
+      // 绑定“合集下载”按钮
+      const downloadBtn = document.getElementById('downloadBtn');
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (downloadModal) downloadModal.style.display = 'flex';
+        });
+      }
+
+      // 保留“分享”按钮的复制逻辑
+      const shareBtn = document.getElementById('shareButton');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const copyText = 'Sino-GDB「九州」地理数据库 https://his.lreept.space/openqgis/omap-geodb/';
+          navigator.clipboard.writeText(copyText).then(() => {
+            const bubble = document.createElement('div');
+            bubble.className = 'hint-bubble';
+            bubble.textContent = '✓ 链接已复制到剪贴板！';
+            document.body.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 1200);
+          }).catch(err => {
+            const errorBubble = document.createElement('div');
+            errorBubble.className = 'hint-bubble';
+            errorBubble.textContent = '⚠ 请手动复制 Sino-GDB 「九州」地理数据库 https://his.lreept.space/openqgis/omap-geodb/';
+            document.body.appendChild(errorBubble);
+            setTimeout(() => errorBubble.remove(), 1600);
+          });
+        });
+      }
+
+      // 所有 .close 按钮都能关闭所在 modal
+      document.querySelectorAll('.close').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const modal = btn.closest('.modal');
+          if (modal) modal.style.display = 'none';
+        });
+      });
+
+      // 点击模态框背景也关闭
+      window.addEventListener('click', (e) => {
+        if (e.target && e.target.classList && e.target.classList.contains('modal')) {
+          e.target.style.display = 'none';
+        }
+      });
+
+      startCarousel();
+    });
+  </script>
+</head>
+<body>
+  <div class="overlay">
+    <header>
+      <h1>Sino-GDB 「九州」地理数据库 </h1> 
+      <a href="https://gis.lreept.space/Share" target="_blank">gis.lreept.space/Share</a>
+      <div style="font-size: 0.75rem; margin-top: 0.5rem; color: #ccc;"> 
+        © OpenStreetMap contributors & © OpenQGIS & @lreept
+      </div>
+    </header>
+
+    <div class="labels"> 
+      <p><a href="https://github.com/OpenQGIS/OMap-GeoDB-HELP/blob/main/README.md" target="Github">使用帮助 Github</a> | 
+         <a href="https://mp.weixin.qq.com/s/mKKr7ZtuMByY63s7_qKrdg" target="wechatLink">公众号</a></p>
+      <p><a href="#" id="copyrightBtn">版权说明</a> | 
+         <a href="#" id="downloadBtn">合集下载</a></p>
+      <p><a href="#" id="shareButton">分享Sino-GDB</a></p>
+    </div>
+
+    <div class="datasets">
+      <!-- 数据集下载地址、英文名、中文名、版本号、数据日期 -->
+      <!-- 1 空中系统 -->
+      <div class="card-wrapper" data-url="https://www.123912.com/s/YO9yjv-hYRB">
+        <div class="en-name">AirSystem</div>
+        <div class="name-version-container">
+          <div class="cn-name">空中系统</div>
+          <div class="version">v7</div>
+        </div>
+        <div class="dataset">
+          <img src="./icons/跑道.svg" alt="空中系统">
+        </div>
+        <div class="date">2026.2.8</div>
+      </div>
+
+      <!-- 2 建筑数据 -->
+      <div class="card-wrapper" data-url="https://www.123865.com/s/YO9yjv-HYRB">
+        <div class="en-name">Buildings</div>
+        <div class="name-version-container">
+          <div class="cn-name">建筑数据</div>
+          <div class="version">v8</div>
+        </div>
+        <div class="dataset">
+          <img src="./icons/建筑.svg" alt="建筑数据">
+        </div>
+        <div class="date">2026.2.8</div>
+      </div>
+
+      <!-- 3 土地系列 -->
+      <div class="card-wrapper" data-url="https://www.123865.com/s/YO9yjv-AYRB">
+        <div class="en-name">LandSeries</div>
+        <div class="name-version-container">
+          <div class="cn-name">土地系列</div>
+          <div class="version">v7</div>
+        </div>
+        <div class="dataset">
+          <img src="./icons/用地数据.svg" alt="土地系列">
+        </div>
+        <div class="date">2026.2.8</div>
+      </div>
+
+      <!-- 4 电力数据 -->
+      <div class="card-wrapper" data-url="">
+        <div class="en-name">Power</div>
+        <div class="name-version-container">
+          <div class="cn-name">电力数据</div>
+          <div class="version">v-</div>
+        </div>
+          <div class="dataset">
+          <img src="./icons/高压电塔.svg" alt="电力数据">
+        </div>
+        <div class="date">----.-.-</div>
+      </div>
+
+      <!-- 5 铁路数据 -->
+      <div class="card-wrapper" data-url="https://www.123912.com/s/YO9yjv-EYRB">
+        <div class="en-name">Railways</div>
+        <div class="name-version-container">
+          <div class="cn-name">铁路数据</div>
+          <div class="version">v6</div>
+        </div>
+        <div class="dataset">
+          <img src="./icons/铁路.svg" alt="铁路数据">
+        </div>
+        <div class="date">2026.2.8</div>
+      </div>
+
+      <!-- 6 道路数据 -->
+      <div class="card-wrapper" data-url="https://www.123865.com/s/YO9yjv-kYRB">
+        <div class="en-name">Roads</div>
+        <div class="name-version-container">
+          <div class="cn-name">道路数据</div>
+          <div class="version">v9</div>
+        </div>
+        <div class="dataset">
+          <img src="./icons/道路.svg" alt="道路数据">
+        </div>
+        <div class="date">2026.5.11</div>
+      </div>
+
+      <!-- 7 交通设施 -->
+      <div class="card-wrapper" data-url="https://www.123865.com/s/YO9yjv-MRRB">  
+        <div class="en-name">Transport</div>
+        <div class="name-version-container">
+          <div class="cn-name">交通设施</div>
+          <div class="version">v5</div>
+        </div>
+        <div class="dataset">
+          <img src="./icons/交通设施.svg" alt="交通设施">
+        </div>
+        <div class="date">2026.2.8</div>
+      </div>
+
+      <!-- 8 水系大坝 -->
+      <div class="card-wrapper" data-url="https://www.123865.com/s/YO9yjv-oYRB">
+        <div class="en-name">WaterDam</div>
+        <div class="name-version-container">
+          <div class="cn-name">水系大坝</div>
+          <div class="version">v7</div>
+        </div>
+        <div class="dataset">
+          <img src="./icons/水系.svg" alt="水系数据">
+        </div>
+        <div class="date">2026.2.8</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <img src="./img/OMap-GeoDB.png" alt="OMap地理数据库标识">
+    </div>
+  </div>
+
+  <!-- 版权与合集下载声明模态框 -->
+  <div id="copyrightModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p>本数据集内容全部源自全球最大的开源地理数据库OpenStreetMap（OSM），数据仅供个人学习或者非商业用途。使用者需知悉并同意：</p>
+      <ul>
+        <li>使用风险：<br>数据可能存在误差、缺失或过时，提供者不对其准确性、适用性作任何担保。</li>
+        <li>免责范围：<br>本数据仅供个人学习免费使用，也并未从中获取商业利益。提供者不对使用者的任何行为负责。使用者应自行确保其使用行为符合相关法律法规。</li>
+        <li>修改与终止：<br>提供者保留随时修改、暂停或终止数据分享的权利。</li>
+      </ul>
+    </div>
+  </div>
+  <div id="downloadModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p style="color: #80cc28; text-align: center; margin-top: 1.2rem; font-size: 1.2rem; font-weight: 700;">
+        <span style="font-size: 1.2rem; font-weight: 500;">九州数据库7合1下载 ___ QQ群：</span> 1046270930
+      </p>
+    </div>
+  </div>
+</body>
+</html>
