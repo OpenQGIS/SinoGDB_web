@@ -361,11 +361,7 @@
       carouselLayer.className = 'carousel-layer';
       document.body.appendChild(carouselLayer);
 
-      const preloadImg = img => new Image().src = urlMap[img];
-      bgList.forEach(preloadImg);
-      preloadImg('0-4k固定底图');
-
-      let currentIndex = 0;
+      let currentIndex = -1;
       let intervalId = null;
       const duration = 2000;
 
