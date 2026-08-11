@@ -56,7 +56,22 @@
 
     header h1 {
       font-size: 2.5rem;
-      margin-bottom: 0.2rem;
+      line-height: 1;
+      margin: 0 auto 0.2rem;
+      display: flex;
+      width: fit-content;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    header h1 .title-icon {
+      width: auto;
+      height: 1em;
+      flex: none;
+    }
+
+    header h1 .title-text {
+      transform: translateY(0.06em);
     }
 
     header a {
@@ -499,7 +514,7 @@
 <body>
   <div class="overlay">
     <header>
-      <h1>Sino-GDB 「九州」地理数据库 </h1> 
+      <h1><span class="title-text">Sino-GDB</span><img class="title-icon" src="./icons/SinoGDB.svg" alt="九州"><span class="title-text">地理数据库</span></h1> 
       <a href="https://gis.lreept.space/Share" target="_blank">gis.lreept.space/Share</a>
       <div style="font-size: 0.75rem; margin-top: 0.5rem; color: #ccc;"> 
         © OpenStreetMap contributors & © OpenQGIS & @lreept
