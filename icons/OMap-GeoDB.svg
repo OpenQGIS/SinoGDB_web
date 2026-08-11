@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 25.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.1"
+   id="图层_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 545.00002 39.999999"
+   xml:space="preserve"
+   sodipodi:docname="OMap-GeoDB.svg"
+   width="545"
+   height="40"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs23" /><sodipodi:namedview
+   id="namedview23"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   showguides="true"
+   inkscape:zoom="0.39304357"
+   inkscape:cx="68.694673"
+   inkscape:cy="324.39151"
+   inkscape:window-width="1920"
+   inkscape:window-height="1001"
+   inkscape:window-x="-9"
+   inkscape:window-y="41"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="图层_1"><sodipodi:guide
+     position="-8.8817842e-15,23.082897"
+     orientation="-1,0"
+     id="guide23"
+     inkscape:locked="false"
+     inkscape:label=""
+     inkscape:color="rgb(0,134,229)" /><sodipodi:guide
+     position="534.7207,22.951412"
+     orientation="1,0"
+     id="guide24"
+     inkscape:locked="false" /><sodipodi:guide
+     position="545,22.951411"
+     orientation="-1,0"
+     id="guide25"
+     inkscape:locked="false"
+     inkscape:label=""
+     inkscape:color="rgb(0,134,229)" /><sodipodi:guide
+     position="138.99405,39.522225"
+     orientation="0,1"
+     id="guide26"
+     inkscape:locked="false"
+     inkscape:label=""
+     inkscape:color="rgb(0,134,229)" /><sodipodi:guide
+     position="301.37045,-0.47777592"
+     orientation="0,1"
+     id="guide27"
+     inkscape:locked="false"
+     inkscape:label=""
+     inkscape:color="rgb(0,134,229)" /></sodipodi:namedview>
+<style
+   type="text/css"
+   id="style1">
+	.st0{fill:#7DBE34;stroke:#7DBE34;stroke-width:0.5;stroke-miterlimit:10;}
+	.st1{font-family:'HGH5_CNKI';}
+	.st2{font-size:30.9986px;}
+	.st3{fill:#B7B7B7;}
+	.st4{fill:#7DBE34;stroke:#7DBE34;stroke-miterlimit:10;}
+	.st5{font-size:31.2447px;}
+	.st6{fill:#B7B6B6;}
+	.st7{font-size:10.6239px;}
+</style>
+<text
+   id="text4"
+   x="407.78839"
+   y="-70.207405"><tspan
+     x="407.78839"
+     y="-70.207405"
+     class="st0 st1 st2"
+     id="tspan1">D</tspan><tspan
+     x="431.8884"
+     y="-70.207405"
+     class="st3 st1 st2"
+     id="tspan2">ata</tspan><tspan
+     x="473.18842"
+     y="-70.207405"
+     class="st0 st1 st2"
+     id="tspan3">B</tspan><tspan
+     x="492.18842"
+     y="-70.207405"
+     class="st3 st1 st2"
+     id="tspan4">ase</tspan></text>
+<text
+   id="text6"
+   x="210.5155"
+   y="-70.207405"><tspan
+     x="210.5155"
+     y="-70.207405"
+     class="st0 st1 st2"
+     id="tspan5">Geo</tspan><tspan
+     x="267.31549"
+     y="-70.207405"
+     class="st3 st1 st2"
+     id="tspan6">graphical</tspan></text>
+<g
+   id="g10"
+   transform="translate(-5,-26.387708)">
+	<text
+   transform="matrix(0.9334,0,0,1,14.1696,-43.7454)"
+   class="st4 st1 st5"
+   id="text7">O</text>
+	<g
+   id="g9">
+		<text
+   transform="translate(41.0715,-57.4808)"
+   class="st6 st1 st7"
+   id="text8">penStreetMap</text>
+		<text
+   transform="translate(41.0715,-46.1116)"
+   class="st6 st1 st7"
+   id="text9">penQGIS</text>
+	</g>
+</g>
+<g
+   id="g11"
+   transform="translate(-5,-26.387708)">
+	<text
+   transform="translate(113.6917,-43.8197)"
+   class="st0 st1 st2"
+   id="text10">Map</text>
+</g>
+<g
+   id="g12"
+   transform="translate(-5,-26.387708)">
+	<text
+   transform="translate(185.2366,-43.8197)"
+   class="st0 st1 st2"
+   id="text11">-</text>
+</g>
+<text
+   id="text15"
+   x="407.78839"
+   y="27.105492"><tspan
+     x="407.78839"
+     y="27.105492"
+     class="st0 st1 st2"
+     id="tspan12">D</tspan><tspan
+     x="431.8884"
+     y="27.105492"
+     class="st3 st1 st2"
+     id="tspan13">ata</tspan><tspan
+     x="473.18842"
+     y="27.105492"
+     class="st0 st1 st2"
+     id="tspan14">B</tspan><tspan
+     x="492.18842"
+     y="27.105492"
+     class="st3 st1 st2"
+     id="tspan15">ase</tspan></text>
+<text
+   id="text17"
+   x="210.5155"
+   y="27.105492"><tspan
+     x="210.5155"
+     y="27.105492"
+     class="st0 st1 st2"
+     id="tspan16">Geo</tspan><tspan
+     x="267.31549"
+     y="27.105492"
+     class="st3 st1 st2"
+     id="tspan17">graphical</tspan></text>
+<g
+   id="g21"
+   transform="translate(-5,-26.387708)">
+	<text
+   transform="matrix(0.9334,0,0,1,14.1696,53.5674)"
+   class="st4 st1 st5"
+   id="text18">O</text>
+	<g
+   id="g20">
+		<text
+   transform="translate(41.0715,39.832)"
+   class="st6 st1 st7"
+   id="text19">penStreetMap</text>
+		<text
+   transform="translate(41.0715,51.2012)"
+   class="st6 st1 st7"
+   id="text20">penQGIS</text>
+	</g>
+</g>
+<g
+   id="g22"
+   transform="translate(-5,-26.387708)">
+	<text
+   transform="translate(113.6917,53.4932)"
+   class="st0 st1 st2"
+   id="text21">Map</text>
+</g>
+<g
+   id="g23"
+   transform="translate(-5,-26.387708)">
+	<text
+   transform="translate(185.2366,53.4932)"
+   class="st0 st1 st2"
+   id="text22">-</text>
+</g>
+</svg>
