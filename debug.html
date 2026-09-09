@@ -450,13 +450,13 @@
         const ok = await robustCopy(code);
         log(`方案 C 执行结果: ${ok}，请在上方输入框粘贴验证！`, ok ? 'success' : 'error');
       } else if (type === 'mock_navigation') {
-        log('--- 方案 D：完整流程（复制并跳转） ---');
-        const url = 'https://1831579846.share.123pan.cn/123pan/YO9yjv-aSJP';
+        log('--- 方案 D：完整流程（复制并跳转，携带直通 ?pwd=719w） ---');
+        const url = 'https://1831579846.share.123pan.cn/123pan/YO9yjv-aSJP?pwd=719w';
         await robustCopy(code);
-        log('已执行复制，将在 80ms 后跳转到 123 网盘...', 'info');
+        log('已执行复制，将在 100ms 后跳转到 123 网盘直通页面...', 'info');
         setTimeout(() => {
           window.location.href = url;
-        }, 80);
+        }, 100);
       }
     }
 

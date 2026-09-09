@@ -1661,13 +1661,22 @@
 
         const mobile = isMobileDevice();
 
+        function buildShareUrl(baseUrl, code) {
+          if (!baseUrl) return '';
+          const trimmed = (code || '').trim();
+          if (!trimmed || baseUrl.includes('pwd=')) return baseUrl;
+          const sep = baseUrl.includes('?') ? '&' : '?';
+          return `${baseUrl}${sep}pwd=${encodeURIComponent(trimmed)}`;
+        }
+
         // 123 网盘按钮：有链接才显示
         if (hasUrl1) {
+          const code1 = (dataset.code1 || '').trim();
+          const target123Url = buildShareUrl(dataset.url, code1);
           pan123Btn.style.display = 'flex';
-          pan123Btn.href = dataset.url;
+          pan123Btn.href = target123Url;
           pan123Btn.target = mobile ? '_self' : '_blank';
           pan123Btn.rel = 'noopener noreferrer';
-          const code1 = (dataset.code1 || '').trim();
           pan123Tip.textContent = code1 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
 
           // 核心机制：在用户按下鼠标/触屏瞬间（pointerdown）提前让弹窗从视口和GPU合成器完全隐形
@@ -1677,7 +1686,7 @@
           pan123Btn.onclick = (e) => {
             e.stopPropagation();
             if (code1) {
-              if (window.debugLog) window.debugLog(`[点击123按钮] 开始复制提取码: "${code1}"`, 'info');
+              if (window.debugLog) window.debugLog(`[点击123按钮] 开始复制提取码: "${code1}" (直通URL已挂载)`, 'info');
               copyTextToClipboard(code1);
             }
             instantHidePopover();
@@ -1685,7 +1694,7 @@
             if (isMobileDevice()) {
               e.preventDefault();
               setTimeout(() => {
-                window.location.href = dataset.url;
+                window.location.href = target123Url;
               }, 100);
             }
             // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页，不经由 window.open 挂起渲染管线
@@ -1700,11 +1709,12 @@
 
         // 百度网盘按钮：有链接才显示
         if (hasUrl2) {
+          const code2 = (dataset.code2 || '').trim();
+          const targetBaiduUrl = buildShareUrl(dataset.url2, code2);
           panBaiduBtn.style.display = 'flex';
-          panBaiduBtn.href = dataset.url2;
+          panBaiduBtn.href = targetBaiduUrl;
           panBaiduBtn.target = mobile ? '_self' : '_blank';
           panBaiduBtn.rel = 'noopener noreferrer';
-          const code2 = (dataset.code2 || '').trim();
           panBaiduTip.textContent = code2 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
 
           panBaiduBtn.onpointerdown = instantHidePopover;
@@ -1712,7 +1722,7 @@
           panBaiduBtn.onclick = (e) => {
             e.stopPropagation();
             if (code2) {
-              if (window.debugLog) window.debugLog(`[点击百度按钮] 开始复制提取码: "${code2}"`, 'info');
+              if (window.debugLog) window.debugLog(`[点击百度按钮] 开始复制提取码: "${code2}" (直通URL已挂载)`, 'info');
               copyTextToClipboard(code2);
             }
             instantHidePopover();
@@ -1720,7 +1730,7 @@
             if (isMobileDevice()) {
               e.preventDefault();
               setTimeout(() => {
-                window.location.href = dataset.url2;
+                window.location.href = targetBaiduUrl;
               }, 100);
             }
             // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页
