@@ -555,7 +555,10 @@
       width: 100%;
     }
 
-    .pan-btn {
+    .pan-btn,
+    .pan-btn:visited,
+    .pan-btn:focus,
+    .pan-btn:active {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 9px;
@@ -567,6 +570,7 @@
       cursor: pointer;
       color: var(--text-main);
       text-decoration: none;
+      outline: none;
       transition: all 0.22s ease;
       font-family: inherit;
       width: 100%;
@@ -1061,20 +1065,20 @@
       
       <div class="pan-options" id="panOptions">
         <!-- 123 网盘 -->
-        <button type="button" class="pan-btn" id="pan123Btn">
+        <a class="pan-btn" id="pan123Btn" href="#" target="_blank" rel="noopener noreferrer">
           <div class="pan-info">
             <div class="pan-name" id="pan123Name">123云盘（免安装下载）</div>
             <div class="pan-tip" id="pan123Tip">自动复制提取码·点击下载</div>
           </div>
-        </button>
+        </a>
 
         <!-- 百度网盘 -->
-        <button type="button" class="pan-btn" id="panBaiduBtn">
+        <a class="pan-btn" id="panBaiduBtn" href="#" target="_blank" rel="noopener noreferrer">
           <div class="pan-info">
             <div class="pan-name" id="panBaiduName">百度网盘（备用通道）</div>
             <div class="pan-tip" id="panBaiduTip">自动复制提取码·点击下载</div>
           </div>
-        </button>
+        </a>
       </div>
 
       <!-- 无网盘链接时的筹备中提示 -->
@@ -1283,14 +1287,19 @@
     function copyTextToClipboard(text) {
       if (!text) return Promise.resolve();
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        return navigator.clipboard.writeText(text);
+        return navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
       }
+      return fallbackCopy(text);
+    }
+
+    function fallbackCopy(text) {
       return new Promise((resolve, reject) => {
         try {
           const ta = document.createElement('textarea');
           ta.value = text;
           ta.style.position = 'fixed';
           ta.style.opacity = '0';
+          ta.style.left = '-9999px';
           document.body.appendChild(ta);
           ta.focus();
           ta.select();
@@ -1334,28 +1343,52 @@
         // 123 网盘按钮：有链接才显示
         if (hasUrl1) {
           pan123Btn.style.display = 'flex';
+          pan123Btn.href = dataset.url;
+          pan123Btn.target = '_blank';
+          pan123Btn.rel = 'noopener noreferrer';
           const code1 = (dataset.code1 || '').trim();
           pan123Tip.textContent = code1 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
           pan123Btn.onclick = (e) => {
             e.stopPropagation();
-            handlePanRedirect('123云盘', dataset.url, code1);
+            if (code1) {
+              copyTextToClipboard(code1);
+              showBubble(`✓ 提取码 [${code1}] 已自动复制！正在前往 123云盘…`, 2200);
+            } else {
+              showBubble('正在前往 123云盘…', 1500);
+            }
+            setTimeout(() => {
+              if (modal) modal.style.display = 'none';
+            }, 300);
           };
         } else {
           pan123Btn.style.display = 'none';
+          pan123Btn.removeAttribute('href');
           pan123Btn.onclick = null;
         }
 
         // 百度网盘按钮：有链接才显示
         if (hasUrl2) {
           panBaiduBtn.style.display = 'flex';
+          panBaiduBtn.href = dataset.url2;
+          panBaiduBtn.target = '_blank';
+          panBaiduBtn.rel = 'noopener noreferrer';
           const code2 = (dataset.code2 || '').trim();
           panBaiduTip.textContent = code2 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
           panBaiduBtn.onclick = (e) => {
             e.stopPropagation();
-            handlePanRedirect('百度网盘', dataset.url2, code2);
+            if (code2) {
+              copyTextToClipboard(code2);
+              showBubble(`✓ 提取码 [${code2}] 已自动复制！正在前往 百度网盘…`, 2200);
+            } else {
+              showBubble('正在前往 百度网盘…', 1500);
+            }
+            setTimeout(() => {
+              if (modal) modal.style.display = 'none';
+            }, 300);
           };
         } else {
           panBaiduBtn.style.display = 'none';
+          panBaiduBtn.removeAttribute('href');
           panBaiduBtn.onclick = null;
         }
 
@@ -1398,27 +1431,6 @@
           arrow.style.left = `${Math.max(arrowMin, Math.min(arrowX, popoverWidth - arrowMin))}px`;
         }
       }
-    }
-
-    async function handlePanRedirect(panName, url, code) {
-      if (!url) return;
-      const modal = document.getElementById('downloadMenuModal');
-      if (modal) modal.style.display = 'none';
-
-      if (code) {
-        try {
-          await copyTextToClipboard(code);
-          showBubble(`✓ 提取码 [${code}] 已复制到剪贴板！正在前往 ${panName}…`, 1800);
-        } catch (e) {
-          showBubble(`提取码为：${code}，正在前往 ${panName}…`, 2200);
-        }
-      } else {
-        showBubble(`正在前往 ${panName}…`, 1200);
-      }
-
-      setTimeout(() => {
-        window.open(url, '_blank');
-      }, 350);
     }
 
     async function loadDatasets() {
