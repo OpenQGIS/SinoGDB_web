@@ -1392,14 +1392,13 @@
           const code1 = (dataset.code1 || '').trim();
           pan123Tip.textContent = code1 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
           pan123Btn.onclick = (e) => {
+            e.preventDefault();
             e.stopPropagation();
             if (code1) {
               copyTextToClipboard(code1);
-              showBubble(`✓ 提取码 [${code1}] 已自动复制！正在前往 123云盘…`, 2000);
-            } else {
-              showBubble('正在前往 123云盘…', 1500);
             }
             closeDownloadMenu();
+            window.open(dataset.url, '_blank');
           };
         } else {
           pan123Btn.style.display = 'none';
@@ -1416,14 +1415,13 @@
           const code2 = (dataset.code2 || '').trim();
           panBaiduTip.textContent = code2 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
           panBaiduBtn.onclick = (e) => {
+            e.preventDefault();
             e.stopPropagation();
             if (code2) {
               copyTextToClipboard(code2);
-              showBubble(`✓ 提取码 [${code2}] 已自动复制！正在前往 百度网盘…`, 2000);
-            } else {
-              showBubble('正在前往 百度网盘…', 1500);
             }
             closeDownloadMenu();
+            window.open(dataset.url2, '_blank');
           };
         } else {
           panBaiduBtn.style.display = 'none';
