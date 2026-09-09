@@ -1313,56 +1313,50 @@
       return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    function copyTextToClipboard(text) {
+    async function copyTextToClipboard(text) {
       if (!text) return false;
-      let success = false;
 
-      // 1. 优先使用 iOS Safari / Android 专用全兼容同步节点拷贝
-      try {
-        const el = document.createElement('textarea');
-        el.value = text;
-        el.setAttribute('readonly', '');
-        // iOS Safari 核心要点：元素必须处于可见文档物理流内（不能是 left: -9999px 或 display: none）
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-        el.style.position = 'absolute';
-        el.style.left = '0px';
-        el.style.top = `${scrollY}px`;
-        el.style.width = '1px';
-        el.style.height = '1px';
-        el.style.padding = '0';
-        el.style.border = 'none';
-        el.style.outline = 'none';
-        el.style.boxShadow = 'none';
-        el.style.background = 'transparent';
-        el.style.opacity = '0.01';
-        el.style.zIndex = '-1';
-        document.body.appendChild(el);
-
-        // iOS 选区与光标适配
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        const selection = window.getSelection();
-        if (selection) {
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-        el.setSelectionRange(0, 999999);
-
-        success = document.execCommand('copy');
-        if (selection) {
-          selection.removeAllRanges();
-        }
-        document.body.removeChild(el);
-      } catch (err) {}
-
-      // 2. 现代 Clipboard API 双重写入
+      // 1. 优先使用 iOS Safari 13.4+ 及现代移动端原生支持的标准异步 Clipboard API
       if (navigator.clipboard && navigator.clipboard.writeText) {
         try {
-          navigator.clipboard.writeText(text).catch(() => {});
+          await navigator.clipboard.writeText(text);
+          return true;
         } catch (e) {}
       }
 
-      return success;
+      // 2. 同步选区保底方案（严格遵循 iOS WebKit 兼容标准）
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        // iOS 关键适配规范：
+        // ① 绝不设置 readonly，否则在 iOS Safari 下 select() 和 setSelectionRange 会静默失效
+        // ② 字体必须 >= 16px，防止触发页面自动缩放
+        // ③ 置于顶层可见视口（z-index: 99999），避免被 WebKit 当成不可见元素拒绝复制
+        ta.style.fontSize = '16px';
+        ta.style.position = 'fixed';
+        ta.style.top = '10px';
+        ta.style.left = '10px';
+        ta.style.width = '20px';
+        ta.style.height = '20px';
+        ta.style.padding = '0';
+        ta.style.border = 'none';
+        ta.style.outline = 'none';
+        ta.style.boxShadow = 'none';
+        ta.style.background = 'transparent';
+        ta.style.opacity = '0.01';
+        ta.style.zIndex = '99999';
+        ta.style.pointerEvents = 'none';
+        document.body.appendChild(ta);
+
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, ta.value.length);
+        const res = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return res;
+      } catch (err) {
+        return false;
+      }
     }
 
     function instantHidePopover() {
@@ -1453,16 +1447,18 @@
           // 彻底解决桌面端因新标签页打开导致原始标签页GPU缓存帧残留、切回页面时弹窗“闪烁显示再消失”的浏览器内核通病！
           pan123Btn.onpointerdown = instantHidePopover;
           pan123Btn.onmousedown = instantHidePopover;
-          pan123Btn.onclick = (e) => {
+          pan123Btn.onclick = async (e) => {
             e.stopPropagation();
             if (code1) {
-              copyTextToClipboard(code1);
+              await copyTextToClipboard(code1);
             }
             instantHidePopover();
             closeDownloadMenu();
             if (isMobileDevice()) {
               e.preventDefault();
-              window.location.href = dataset.url;
+              setTimeout(() => {
+                window.location.href = dataset.url;
+              }, 60);
             }
             // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页，不经由 window.open 挂起渲染管线
           };
@@ -1485,16 +1481,18 @@
 
           panBaiduBtn.onpointerdown = instantHidePopover;
           panBaiduBtn.onmousedown = instantHidePopover;
-          panBaiduBtn.onclick = (e) => {
+          panBaiduBtn.onclick = async (e) => {
             e.stopPropagation();
             if (code2) {
-              copyTextToClipboard(code2);
+              await copyTextToClipboard(code2);
             }
             instantHidePopover();
             closeDownloadMenu();
             if (isMobileDevice()) {
               e.preventDefault();
-              window.location.href = dataset.url2;
+              setTimeout(() => {
+                window.location.href = dataset.url2;
+              }, 60);
             }
             // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页
           };
@@ -1575,7 +1573,7 @@
 
     async function loadDatasets() {
       try {
-        const res = await fetch('./datasets.md?t=' + Date.now());
+        const res = await fetch('./datasets.md?t=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) throw new Error('Cannot fetch datasets.md');
         const text = await res.text();
         const parsed = parseMarkdownTable(text);
