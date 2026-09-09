@@ -35,7 +35,9 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: auto;
       background-color: var(--bg-dark);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: var(--text-main);
@@ -44,10 +46,9 @@
     /* 独立全屏画布：底图与叠加图严格基于同比例矩阵渲染，彻底解决移动端错位 */
     .bg-stage {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100vw;
-      height: 100dvh;
+      height: 100vh;
       overflow: hidden;
       z-index: 0;
       pointer-events: none;
@@ -60,16 +61,21 @@
       height: 100%;
     }
 
-    /* 前景整体布局 */
+    /* 前景整体布局：纯粹全屏单页，绝对锁定视口，彻底杜绝任何拖拽滑动、橡皮筋弹跳或动态拉伸 */
     .app-layout {
-      position: relative;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      overscroll-behavior: none;
       z-index: 1;
-      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       background: radial-gradient(circle at center, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.6) 100%);
-      padding: 1.8rem 2.2rem;
+      padding: max(1.8rem, env(safe-area-inset-top, 0px)) 2.2rem max(1.8rem, env(safe-area-inset-bottom, 0px));
+      box-sizing: border-box;
     }
 
     header {
@@ -382,6 +388,8 @@
       justify-content: center;
       align-items: center;
       padding: 1.2rem;
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     .modal-content {
@@ -613,7 +621,7 @@
     /* 中等屏幕 / 桌面分屏浏览 (769px ~ 1279px)：收缩尺寸，坚决保持单行全部可见 (不折行遮挡地图) */
     @media (min-width: 769px) and (max-width: 1279px) {
       .app-layout {
-        padding: 1.4rem 1.2rem;
+        padding: max(1.4rem, env(safe-area-inset-top, 0px)) 1.2rem max(1.2rem, env(safe-area-inset-bottom, 0px));
       }
 
       .quick-nav {
@@ -698,7 +706,7 @@
 
     @media (max-width: 768px) {
       .app-layout {
-        padding: 1.2rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+        padding: max(1.2rem, env(safe-area-inset-top, 0px)) 1rem max(1rem, env(safe-area-inset-bottom, 0px));
         justify-content: flex-start;
       }
 
