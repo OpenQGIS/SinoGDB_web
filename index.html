@@ -973,10 +973,30 @@
       margin-bottom: 0.4rem;
     }
 
-    @media (max-width: 768px) {
-      .mobile-tip {
-        display: block;
-      }
+    .hint-bubble {
+      position: fixed;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 24, 32, 0.94);
+      color: #80cc28;
+      border: 1px solid rgba(128, 204, 40, 0.45);
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.65), 0 0 16px rgba(128, 204, 40, 0.25);
+      padding: 0.55rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 99999;
+      pointer-events: none;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      white-space: nowrap;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .hint-bubble.fade-out {
+      opacity: 0;
+      transform: translate(-50%, -10px);
     }
   </style>
 </head>
@@ -1313,6 +1333,29 @@
       });
     }
 
+    function closeDownloadMenu() {
+      const modal = document.getElementById('downloadMenuModal');
+      if (modal) modal.style.display = 'none';
+      document.querySelectorAll('.dataset-card.active').forEach(c => c.classList.remove('active'));
+    }
+
+    function showBubble(msg, duration = 1600) {
+      const bubble = document.createElement('div');
+      bubble.className = 'hint-bubble';
+      bubble.textContent = msg;
+      document.body.appendChild(bubble);
+      setTimeout(() => {
+        bubble.classList.add('fade-out');
+        setTimeout(() => bubble.remove(), 250);
+      }, duration);
+    }
+
+    // 页面切出或失焦时自动关闭下载弹窗
+    window.addEventListener('blur', closeDownloadMenu);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) closeDownloadMenu();
+    });
+
     function openDownloadMenu(dataset, cardEl) {
       const modal = document.getElementById('downloadMenuModal');
       const popover = modal.querySelector('.card-popover');
@@ -1352,13 +1395,11 @@
             e.stopPropagation();
             if (code1) {
               copyTextToClipboard(code1);
-              showBubble(`✓ 提取码 [${code1}] 已自动复制！正在前往 123云盘…`, 2200);
+              showBubble(`✓ 提取码 [${code1}] 已自动复制！正在前往 123云盘…`, 2000);
             } else {
               showBubble('正在前往 123云盘…', 1500);
             }
-            setTimeout(() => {
-              if (modal) modal.style.display = 'none';
-            }, 300);
+            closeDownloadMenu();
           };
         } else {
           pan123Btn.style.display = 'none';
@@ -1378,13 +1419,11 @@
             e.stopPropagation();
             if (code2) {
               copyTextToClipboard(code2);
-              showBubble(`✓ 提取码 [${code2}] 已自动复制！正在前往 百度网盘…`, 2200);
+              showBubble(`✓ 提取码 [${code2}] 已自动复制！正在前往 百度网盘…`, 2000);
             } else {
               showBubble('正在前往 百度网盘…', 1500);
             }
-            setTimeout(() => {
-              if (modal) modal.style.display = 'none';
-            }, 300);
+            closeDownloadMenu();
           };
         } else {
           panBaiduBtn.style.display = 'none';
@@ -1561,14 +1600,6 @@
           clearInterval(intervalId);
           intervalId = null;
         }
-      }
-
-      function showBubble(msg, duration = 1200) {
-        const bubble = document.createElement('div');
-        bubble.className = 'hint-bubble';
-        bubble.textContent = msg;
-        document.body.appendChild(bubble);
-        setTimeout(() => bubble.remove(), duration);
       }
 
       const copyrightModal = document.getElementById('copyrightModal');
