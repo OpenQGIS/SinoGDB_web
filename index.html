@@ -1063,16 +1063,16 @@
         <!-- 123 网盘 -->
         <button type="button" class="pan-btn" id="pan123Btn">
           <div class="pan-info">
-            <div class="pan-name">123 云盘 (高速免登录)</div>
-            <div class="pan-tip" id="pan123Tip">无需提取码 · 直链高速下载</div>
+            <div class="pan-name" id="pan123Name">123云盘（免安装下载）</div>
+            <div class="pan-tip" id="pan123Tip">自动复制提取码·点击下载</div>
           </div>
         </button>
 
         <!-- 百度网盘 -->
         <button type="button" class="pan-btn" id="panBaiduBtn">
           <div class="pan-info">
-            <div class="pan-name">百度网盘 (备用通道)</div>
-            <div class="pan-tip" id="panBaiduTip">提取码：自动复制</div>
+            <div class="pan-name" id="panBaiduName">百度网盘（备用通道）</div>
+            <div class="pan-tip" id="panBaiduTip">自动复制提取码·点击下载</div>
           </div>
         </button>
       </div>
@@ -1270,14 +1270,14 @@
     }
 
     const FALLBACK_DATASETS = [
-      { id: 'AirSystem', en_name: 'AirSystem', cn_name: '空中系统', version: 'v8', date: '2026.8.25', icon: './icons/跑道.svg', url: 'https://1831579846.share.123pan.cn/123pan/YO9yjv-aSJP', code1: '719w', url2: 'https://pan.baidu.com/s/1e3BH5NOJ0cPV700FmV6eXg', code2: 'bm4r', layer_key: 'AirSystem' },
-      { id: 'Buildings', en_name: 'Buildings', cn_name: '建筑数据', version: 'v9', date: '2026.8.25', icon: './icons/建筑.svg', url: 'https://1831579846.share.123pan.cn/123pan/YO9yjv-y0GY', code1: 'zgpE', url2: 'https://pan.baidu.com/s/1Wrwwwfd6FPx27aPD-Wqyxg', code2: '1nuc', layer_key: 'Buildings' },
-      { id: 'LandSeries', en_name: 'LandSeries', cn_name: '土地系列', version: 'v8', date: '2026.8.25', icon: './icons/用地数据.svg', url: 'https://1831579846.share.123pan.cn/123pan/YO9yjv-pL6Y', code1: 'oHXZ', url2: 'https://pan.baidu.com/s/1KwxoxyFhlP20m7tMt79mjg', code2: 'hyay', layer_key: 'LandSeries' },
-      { id: 'Power', en_name: 'Power', cn_name: '电力数据', version: 'v-', date: '----.-.-', icon: './icons/高压电塔.svg', url: '', code1: '', url2: '', code2: '', layer_key: 'Power' },
-      { id: 'Railways', en_name: 'Railways', cn_name: '铁路数据', version: 'v7', date: '2026.8.25', icon: './icons/铁路.svg', url: 'https://1831579846.share.123pan.cn/123pan/YO9yjv-NqmP', code1: 'lvri', url2: 'https://pan.baidu.com/s/17R734XEsINGIml_96i7Klw', code2: '3b6f', layer_key: 'Railways' },
-      { id: 'Roads', en_name: 'Roads', cn_name: '道路数据', version: 'v10', date: '2026.8.25', icon: './icons/道路.svg', url: 'https://1831579846.share.123pan.cn/123pan/YO9yjv-CqmP', code1: 'xpWg', url2: 'https://pan.baidu.com/s/1bWuSE_RLDYNr8RroiJMsYQ', code2: 'vmra', layer_key: 'Roads' },
-      { id: 'Transport', en_name: 'Transport', cn_name: '交通设施', version: 'v6', date: '2026.8.25', icon: './icons/交通设施.svg', url: 'https://1831579846.share.123pan.cn/123pan/YO9yjv-V0GY', code1: 'WMvJ', url2: 'https://pan.baidu.com/s/12HBuawx920XTSXktZX9QeA', code2: 'ux6t', layer_key: 'Transport' },
-      { id: 'WaterDam', en_name: 'WaterDam', cn_name: '水系大坝', version: 'v8', date: '2026.8.25', icon: './icons/水系.svg', url: 'https://1831579846.share.123pan.cn/123pan/YO9yjv-n9HP', code1: 'iyau', url2: 'https://pan.baidu.com/s/1t2o8JIkNX1I4ooy19uR8KQ', code2: 'icvd', layer_key: 'WaterDam' }
+      {"id": "AirSystem", "en_name": "AirSystem", "cn_name": "空中系统", "version": "v8", "date": "2026.8.25", "icon": "./icons/跑道.svg", "url": "https://1831579846.share.123pan.cn/123pan/YO9yjv-aSJP", "code1": "719w", "url2": "https://pan.baidu.com/s/1e3BH5NOJ0cPV700FmV6eXg", "code2": "bm4r", "layer_key": "AirSystem"},
+      {"id": "Buildings", "en_name": "Buildings", "cn_name": "建筑数据", "version": "v9", "date": "2026.8.25", "icon": "./icons/建筑.svg", "url": "https://1831579846.share.123pan.cn/123pan/YO9yjv-y0GY", "code1": "zgpE", "url2": "https://pan.baidu.com/s/1Wrwwwfd6FPx27aPD-Wqyxg", "code2": "1nuc", "layer_key": "Buildings"},
+      {"id": "LandSeries", "en_name": "LandSeries", "cn_name": "土地系列", "version": "v8", "date": "2026.8.25", "icon": "./icons/用地数据.svg", "url": "https://1831579846.share.123pan.cn/123pan/YO9yjv-pL6Y", "code1": "oHXZ", "url2": "https://pan.baidu.com/s/1KwxoxyFhlP20m7tMt79mjg", "code2": "hyay", "layer_key": "LandSeries"},
+      {"id": "Power", "en_name": "Power", "cn_name": "电力数据", "version": "v-", "date": "----.-.-", "icon": "./icons/高压电塔.svg", "url": "", "code1": "", "url2": "", "code2": "", "layer_key": "Power"},
+      {"id": "Railways", "en_name": "Railways", "cn_name": "铁路数据", "version": "v7", "date": "2026.8.25", "icon": "./icons/铁路.svg", "url": "https://1831579846.share.123pan.cn/123pan/YO9yjv-NqmP", "code1": "lvri", "url2": "https://pan.baidu.com/s/17R734XEsINGIml_96i7Klw", "code2": "3b6f", "layer_key": "Railways"},
+      {"id": "Roads", "en_name": "Roads", "cn_name": "道路数据", "version": "v10", "date": "2026.8.25", "icon": "./icons/道路.svg", "url": "https://1831579846.share.123pan.cn/123pan/YO9yjv-CqmP", "code1": "xpWg", "url2": "https://pan.baidu.com/s/1bWuSE_RLDYNr8RroiJMsYQ", "code2": "vmra", "layer_key": "Roads"},
+      {"id": "Transport", "en_name": "Transport", "cn_name": "交通设施", "version": "v6", "date": "2026.8.25", "icon": "./icons/交通设施.svg", "url": "https://1831579846.share.123pan.cn/123pan/YO9yjv-V0GY", "code1": "WMvJ", "url2": "https://pan.baidu.com/s/12HBuawx920XTSXktZX9QeA", "code2": "ux6t", "layer_key": "Transport"},
+      {"id": "WaterDam", "en_name": "WaterDam", "cn_name": "水系大坝", "version": "v8", "date": "2026.8.25", "icon": "./icons/水系.svg", "url": "https://1831579846.share.123pan.cn/123pan/YO9yjv-n9HP", "code1": "iyau", "url2": "https://pan.baidu.com/s/1t2o8JIkNX1I4ooy19uR8KQ", "code2": "icvd", "layer_key": "WaterDam"}
     ];
 
     function copyTextToClipboard(text) {
@@ -1335,7 +1335,7 @@
         if (hasUrl1) {
           pan123Btn.style.display = 'flex';
           const code1 = (dataset.code1 || '').trim();
-          pan123Tip.textContent = code1 ? `提取码：${code1} (点击自动复制)` : '无需提取码 · 高速直链下载';
+          pan123Tip.textContent = code1 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
           pan123Btn.onclick = (e) => {
             e.stopPropagation();
             handlePanRedirect('123云盘', dataset.url, code1);
@@ -1349,7 +1349,7 @@
         if (hasUrl2) {
           panBaiduBtn.style.display = 'flex';
           const code2 = (dataset.code2 || '').trim();
-          panBaiduTip.textContent = code2 ? `提取码：${code2} (点击自动复制)` : '无需提取码 · 备用高速通道';
+          panBaiduTip.textContent = code2 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
           panBaiduBtn.onclick = (e) => {
             e.stopPropagation();
             handlePanRedirect('百度网盘', dataset.url2, code2);
@@ -1423,7 +1423,7 @@
 
     async function loadDatasets() {
       try {
-        const res = await fetch('./datasets.md');
+        const res = await fetch('./datasets.md?t=' + Date.now());
         if (!res.ok) throw new Error('Cannot fetch datasets.md');
         const text = await res.text();
         const parsed = parseMarkdownTable(text);
@@ -1510,17 +1510,9 @@
         });
 
         card.addEventListener('click', function () {
-          const isMobile = window.innerWidth <= 768;
-
-          if (isMobile) {
-            if (!this.classList.contains('active')) {
-              stopCarousel();
-              setActiveCard(this);
-              engine.setOverlay(item.layer_key || item.id, 0.75);
-              return;
-            }
-          }
-
+          stopCarousel();
+          setActiveCard(this);
+          engine.setOverlay(item.layer_key || item.id, 0.75);
           openDownloadMenu(item, this);
         });
 
