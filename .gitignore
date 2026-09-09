@@ -1,0 +1,16 @@
+﻿# 保护高清工程原图，不暴露到公网 Git 仓库
+img/*.png
+img/raw/
+*.psd
+*.ai
+*.qgz
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 操作系统与编辑器
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,33 @@
+{
+  "originalSize": [
+    3838,
+    2161
+  ],
+  "aspectRatio": 1.77603,
+  "mode": "single",
+  "levels": {
+    "1080p": {
+      "width": 1920,
+      "height": 1081
+    },
+    "2k": {
+      "width": 2560,
+      "height": 1441
+    },
+    "4k": {
+      "width": 3838,
+      "height": 2161
+    }
+  },
+  "layers": [
+    "base",
+    "AirSystem",
+    "Buildings",
+    "LandSeries",
+    "Power",
+    "Railways",
+    "Roads",
+    "Transport",
+    "WaterDam"
+  ]
+}
