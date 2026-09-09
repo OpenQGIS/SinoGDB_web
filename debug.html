@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Sino-GDB 剪贴板与提取码真机诊断台</title>
+  <style>
+    :root {
+      --primary: #80cc28;
+      --primary-hover: #98e833;
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f0f6fc;
+      --muted: #8b949e;
+      --danger: #f85149;
+      --success: #3fb950;
+      --warning: #d29922;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 16px;
+      padding-bottom: 60px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    header {
+      padding: 16px 0 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(128, 204, 40, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(128, 204, 40, 0.3);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #0d1117;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-danger {
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .paste-box {
+      width: 100%;
+      padding: 12px;
+      background: #090d13;
+      border: 1.5px dashed rgba(128, 204, 40, 0.4);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .paste-box:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+    .result-display {
+      background: #090d13;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      word-break: break-all;
+    }
+    .result-val {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 4px 0;
+    }
+    .dataset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .dataset-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .dataset-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .dataset-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .dataset-codes {
+      display: flex;
+      gap: 8px;
+      font-size: 0.78rem;
+      margin-bottom: 8px;
+    }
+    .code-pill {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .log-box {
+      background: #05070a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 0.76rem;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #9da5b4;
+    }
+    .log-line {
+      margin-bottom: 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .log-success { color: var(--success); }
+    .log-error { color: var(--danger); }
+    .log-info { color: #58a6ff; }
+    .nav-link {
+      display: inline-block;
+      margin-top: 14px;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1><span>🛠</span> Sino-GDB 剪贴板诊断台</h1>
+    <div class="subtitle">针对 iOS Safari / iOS Edge 浏览器剪贴板与跳转行为的真机实测</div>
+    <a href="./index.html" class="nav-link">← 返回九州地理数据库首页</a>
+  </header>
+
+  <!-- 1. 剪贴板当前状态直接检验 -->
+  <div class="section">
+    <div class="section-title">
+      <span>1. 检验您手机当前的剪贴板</span>
+      <span class="badge">直接排查</span>
+    </div>
+    <p style="color: var(--muted); font-size: 0.8rem; margin-bottom: 8px;">
+      请长按下方输入框并点击「粘贴」，或者点击读取按钮，查看您手机剪贴板中目前究竟存着什么内容：
+    </p>
+
+    <input type="text" class="paste-box" id="testPasteInput" placeholder="👉 点此长按并选择【粘贴】 👈" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+    <div class="btn-group" style="margin-top: 10px;">
+      <button class="btn btn-secondary" id="btnReadClipboard">📋 尝试通过 API 读取剪贴板内容</button>
+      <button class="btn btn-danger" id="btnClearClipboard">🧹 强制向剪贴板写入 "TEST-8888"（测试手机是否允许写入）</button>
+    </div>
+
+    <div class="result-display" id="clipboardInspectBox" style="display: none;">
+      <div>当前识别到的文本：</div>
+      <div class="result-val" id="clipboardInspectVal">--</div>
+      <div id="clipboardInspectMeta" style="color: var(--muted); font-size: 0.76rem;">--</div>
+    </div>
+  </div>
+
+  <!-- 2. 数据源解析实时校验 -->
+  <div class="section">
+    <div class="section-title">
+      <span>2. 网页数据源解析状况</span>
+      <span class="badge" id="dsStatusBadge">正在加载...</span>
+    </div>
+    <div id="datasetsContainer" class="dataset-list">
+      <div style="text-align: center; padding: 12px; color: var(--muted);">正在解析 datasets.md...</div>
+    </div>
+  </div>
+
+  <!-- 3. 多策略复制实验室 -->
+  <div class="section">
+    <div class="section-title">
+      <span>3. 复制方案全兼容对比实验</span>
+      <span class="badge">技术测试</span>
+    </div>
+    <p style="color: var(--muted); font-size: 0.8rem; margin-bottom: 10px;">
+      测试空中系统真实提取码 (<b>719w</b>) 在不同底层 API 下的成功率：
+    </p>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="testStrategy('async_only')">
+        方案 A：纯 navigator.clipboard.writeText (现代异步)
+      </button>
+      <button class="btn btn-secondary" onclick="testStrategy('dom_only')">
+        方案 B：纯 DOM 物理选区 execCommand (传统选区)
+      </button>
+      <button class="btn btn-secondary" onclick="testStrategy('dual_buffer')">
+        方案 C：双重写入 + 80ms 物理缓冲 (当前线上采用方案)
+      </button>
+      <button class="btn btn-secondary" onclick="testStrategy('mock_navigation')">
+        方案 D：完整模拟线上按钮流程（复制 719w + 跳转 123 网盘）
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. 运行日志与环境 -->
+  <div class="section">
+    <div class="section-title">
+      <span>4. 实时运行日志</span>
+      <button class="btn btn-secondary" style="width: auto; padding: 2px 8px; font-size: 0.72rem;" onclick="clearLogs()">清空日志</button>
+    </div>
+    <div class="log-box" id="logBox"></div>
+    <div style="margin-top: 8px; font-size: 0.72rem; color: var(--muted);" id="envMetaBox"></div>
+  </div>
+
+  <script>
+    function log(msg, type = 'info') {
+      const box = document.getElementById('logBox');
+      const line = document.createElement('div');
+      line.className = `log-line log-${type}`;
+      const now = new Date().toTimeString().split(' ')[0] + '.' + String(Date.now() % 1000).padStart(3, '0');
+      line.textContent = `[${now}] ${msg}`;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById('logBox').innerHTML = '';
+    }
+
+    // 1. 监测输入框的粘贴事件
+    const pasteInput = document.getElementById('testPasteInput');
+    pasteInput.addEventListener('paste', (e) => {
+      let pastedText = '';
+      if (e.clipboardData && e.clipboardData.getData) {
+        pastedText = e.clipboardData.getData('text');
+      }
+      setTimeout(() => {
+        const val = pastedText || pasteInput.value;
+        inspectValue(val, '通过输入框长按【粘贴】捕获');
+        log(`长按粘贴成功！捕获内容: "${val}" (长度: ${val.length})`, (val === 'X3' || val === 'x3') ? 'error' : 'success');
+      }, 50);
+    });
+
+    pasteInput.addEventListener('input', () => {
+      const val = pasteInput.value;
+      inspectValue(val, '通过 input 输入变化捕获');
+    });
+
+    function inspectValue(val, source) {
+      const box = document.getElementById('clipboardInspectBox');
+      const valEl = document.getElementById('clipboardInspectVal');
+      const metaEl = document.getElementById('clipboardInspectMeta');
+      box.style.display = 'block';
+      valEl.textContent = val ? `"${val}"` : '(空内容)';
+      
+      let hex = [];
+      for (let i = 0; i < val.length; i++) {
+        hex.push(val.charCodeAt(i).toString(16).toUpperCase());
+      }
+      metaEl.innerHTML = `来源: ${source}<br>字符长度: ${val.length} | 十六进制: ${hex.join(' ')}`;
+    }
+
+    // 2. API 读取剪贴板
+    document.getElementById('btnReadClipboard').addEventListener('click', async () => {
+      log('尝试调用 navigator.clipboard.readText()...');
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        log('当前浏览器不支持 navigator.clipboard.readText()（iOS 默认限制网页读取剪贴板，请长按上方输入框粘贴）', 'error');
+        alert('iOS 限制网页直接读取剪贴板，请在上方输入框长按选择【粘贴】！');
+        return;
+      }
+      try {
+        const text = await navigator.clipboard.readText();
+        log(`读取成功: "${text}"`, 'success');
+        inspectValue(text, 'navigator.clipboard.readText()');
+      } catch (err) {
+        log(`读取被拒绝: ${err.message}（iOS 保护隐私，请长按上方输入框进行粘贴）`, 'error');
+      }
+    });
+
+    // 3. 写入测试内容
+    document.getElementById('btnClearClipboard').addEventListener('click', async () => {
+      log('正在尝试向系统剪贴板写入测试标识 "TEST-8888"...');
+      const ok = await robustCopy('TEST-8888');
+      if (ok) {
+        log('✓ 成功写入 "TEST-8888"！请长按上方输入框粘贴测试是否改变。', 'success');
+        alert('已成功写入 "TEST-8888"！请长按输入框粘贴核对。');
+      } else {
+        log('✗ 写入失败！该浏览器可能封锁了剪贴板权限。', 'error');
+      }
+    });
+
+    // 强健复制函数
+    async function robustCopy(text) {
+      log(`[robustCopy] 开始复制: "${text}"`);
+      let success = false;
+
+      // 现代 API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          log('[robustCopy] 现代 API navigator.clipboard.writeText 成功！', 'success');
+          success = true;
+        } catch (err) {
+          log(`[robustCopy] 现代 API 失败: ${err.message}，启用 DOM 选区降级...`, 'error');
+        }
+      }
+
+      // DOM 物理选区保底
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.fontSize = '16px';
+        ta.style.position = 'fixed';
+        ta.style.top = '10px';
+        ta.style.left = '10px';
+        ta.style.width = '20px';
+        ta.style.height = '20px';
+        ta.style.padding = '0';
+        ta.style.border = 'none';
+        ta.style.outline = 'none';
+        ta.style.boxShadow = 'none';
+        ta.style.background = 'transparent';
+        ta.style.opacity = '0.01';
+        ta.style.zIndex = '99999';
+        ta.style.pointerEvents = 'none';
+        document.body.appendChild(ta);
+
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, ta.value.length);
+        const res = document.execCommand('copy');
+        document.body.removeChild(ta);
+        log(`[robustCopy] DOM execCommand('copy') 返回结果: ${res}`, res ? 'success' : 'error');
+        if (res) success = true;
+      } catch (err) {
+        log(`[robustCopy] DOM 复制异常: ${err.message}`, 'error');
+      }
+
+      return success;
+    }
+
+    // 复制策略测试
+    async function testStrategy(type) {
+      const code = '719w';
+      if (type === 'async_only') {
+        log('--- 方案 A：纯异步 API ---');
+        try {
+          await navigator.clipboard.writeText(code);
+          log('方案 A 执行完成，请长按上方输入框粘贴验证！', 'success');
+        } catch (e) {
+          log(`方案 A 抛出异常: ${e.message}`, 'error');
+        }
+      } else if (type === 'dom_only') {
+        log('--- 方案 B：纯 DOM 物理选区 ---');
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = code;
+          ta.style.fontSize = '16px';
+          ta.style.position = 'fixed';
+          ta.style.top = '10px';
+          ta.style.left = '10px';
+          ta.style.opacity = '0.01';
+          ta.style.zIndex = '99999';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          ta.setSelectionRange(0, ta.value.length);
+          const r = document.execCommand('copy');
+          document.body.removeChild(ta);
+          log(`方案 B execCommand 返回: ${r}，请在上方输入框粘贴验证！`, r ? 'success' : 'error');
+        } catch (e) {
+          log(`方案 B 异常: ${e.message}`, 'error');
+        }
+      } else if (type === 'dual_buffer') {
+        log('--- 方案 C：双重写入 + 80ms 缓冲 ---');
+        const ok = await robustCopy(code);
+        log(`方案 C 执行结果: ${ok}，请在上方输入框粘贴验证！`, ok ? 'success' : 'error');
+      } else if (type === 'mock_navigation') {
+        log('--- 方案 D：完整流程（复制并跳转） ---');
+        const url = 'https://1831579846.share.123pan.cn/123pan/YO9yjv-aSJP';
+        await robustCopy(code);
+        log('已执行复制，将在 80ms 后跳转到 123 网盘...', 'info');
+        setTimeout(() => {
+          window.location.href = url;
+        }, 80);
+      }
+    }
+
+    // 加载并渲染数据集
+    async function initDatasets() {
+      const container = document.getElementById('datasetsContainer');
+      const badge = document.getElementById('dsStatusBadge');
+      try {
+        const res = await fetch('./datasets.md?t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        const tableLines = lines.filter(l => l.startsWith('|') && l.endsWith('|'));
+        const headers = tableLines[0].split('|').map(s => s.trim()).filter(Boolean);
+        
+        container.innerHTML = '';
+        badge.textContent = '解析成功';
+        badge.style.color = 'var(--success)';
+
+        for (let i = 2; i < tableLines.length; i++) {
+          const cols = tableLines[i].split('|').map(s => s.trim());
+          if (cols[0] === '') cols.shift();
+          if (cols[cols.length - 1] === '') cols.pop();
+          const item = {};
+          headers.forEach((h, idx) => { item[h] = cols[idx] || ''; });
+
+          const div = document.createElement('div');
+          div.className = 'dataset-item';
+          div.innerHTML = `
+            <div class="dataset-header">
+              <span class="dataset-name">${item.cn_name} (${item.en_name})</span>
+              <span class="badge">${item.version}</span>
+            </div>
+            <div class="dataset-codes">
+              <span class="code-pill">123码: <b>${item.code1 || '无'}</b></span>
+              <span class="code-pill">百度码: <b>${item.code2 || '无'}</b></span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary" style="flex: 1; padding: 6px;" onclick="copyDatasetCode('${item.cn_name}', '${item.code1}')">
+                复制 123码 (${item.code1 || '无'})
+              </button>
+              <button class="btn btn-secondary" style="flex: 1; padding: 6px;" onclick="copyDatasetCode('${item.cn_name}', '${item.code2}')">
+                复制 百度码 (${item.code2 || '无'})
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        }
+        log('成功从 datasets.md 实时解析 ' + (tableLines.length - 2) + ' 个数据集！', 'success');
+      } catch (err) {
+        badge.textContent = '加载失败';
+        badge.style.color = 'var(--danger)';
+        log('加载 datasets.md 失败: ' + err.message, 'error');
+      }
+    }
+
+    window.copyDatasetCode = async function(name, code) {
+      if (!code) {
+        log(`${name} 没有提取码`, 'warning');
+        return;
+      }
+      log(`点击复制 ${name} 提取码: "${code}"...`);
+      const ok = await robustCopy(code);
+      if (ok) {
+        inspectValue(code, `复制 ${name} 提取码`);
+        alert(`已成功复制【${name}】提取码: ${code}\n请在上方输入框长按粘贴验证！`);
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('envMetaBox').innerHTML = `
+        <b>当前环境：</b><br>
+        UA: ${navigator.userAgent}<br>
+        屏幕尺寸: ${window.innerWidth}x${window.innerHeight} (DPR: ${window.devicePixelRatio})<br>
+        Clipboard API: ${navigator.clipboard ? '支持' : '不支持'}<br>
+        writeText: ${navigator.clipboard && navigator.clipboard.writeText ? '支持' : '不支持'}
+      `;
+      log('诊断台初始化完成。环境: ' + (navigator.userAgent.includes('iPhone') ? 'iOS 设备' : '非 iOS 设备'));
+      initDatasets();
+    });
+  </script>
+</body>
+</html>
