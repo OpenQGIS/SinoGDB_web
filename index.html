@@ -1003,6 +1003,186 @@
       opacity: 0;
       transform: translate(-50%, -10px);
     }
+
+    /* 可拖拽、可折叠移动端诊断面板 */
+    .debug-panel {
+      position: fixed;
+      top: 56px;
+      left: 12px;
+      width: min(340px, calc(100vw - 24px));
+      max-height: 75vh;
+      background: rgba(13, 17, 23, 0.96);
+      border: 1.5px solid rgba(128, 204, 40, 0.5);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 16px rgba(128, 204, 40, 0.25);
+      border-radius: 12px;
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      font-size: 13px;
+      color: #f0f6fc;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .debug-panel.collapsed {
+      max-height: 40px;
+      width: 220px;
+    }
+    .debug-panel.collapsed .debug-panel-body {
+      display: none !important;
+    }
+    .debug-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(22, 27, 34, 0.98);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: grab;
+      touch-action: none;
+    }
+    .debug-panel-header:active {
+      cursor: grabbing;
+    }
+    .debug-title {
+      font-weight: 700;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .debug-drag-handle {
+      color: #8b949e;
+      font-size: 14px;
+    }
+    .debug-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .debug-btn-icon {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      color: #8b949e;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .debug-btn-icon:hover, .debug-btn-icon:active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .debug-panel-body {
+      padding: 10px;
+      overflow-y: auto;
+      max-height: calc(75vh - 40px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .debug-section {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .debug-section-title {
+      font-weight: 600;
+      font-size: 11px;
+      color: #80cc28;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .debug-paste-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      background: #090d13;
+      border: 1px dashed rgba(128, 204, 40, 0.5);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .debug-btn-row {
+      display: flex;
+      gap: 6px;
+    }
+    .debug-btn {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      cursor: pointer;
+      text-align: center;
+    }
+    .debug-btn:active {
+      transform: scale(0.97);
+    }
+    .debug-clip-result {
+      margin-top: 6px;
+      padding: 6px;
+      background: #090d13;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: monospace;
+      font-size: 11px;
+      word-break: break-all;
+    }
+    .debug-datasets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 110px;
+      overflow-y: auto;
+      font-size: 11px;
+    }
+    .debug-ds-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    .debug-log-box {
+      background: #05070a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 6px;
+      font-family: monospace;
+      font-size: 10px;
+      max-height: 110px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: #9da5b4;
+    }
+    .debug-log-box .log-line {
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+    .debug-log-box .log-success { color: #3fb950; }
+    .debug-log-box .log-error { color: #f85149; }
+    .debug-log-box .log-info { color: #58a6ff; }
   </style>
 </head>
 <body>
@@ -1111,6 +1291,50 @@
         <div class="empty-icon">⏳</div>
         <div class="empty-title">数据正在整理筹备中</div>
         <div class="empty-desc">敬请期待后续版本发布与分享链接</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5次连击左上角Sino-GDB触发：可折叠可拖拽移动端诊断浮窗 -->
+  <div id="debugFloatingPanel" class="debug-panel" style="display: none;">
+    <div class="debug-panel-header" id="debugPanelHeader">
+      <div class="debug-title">
+        <span class="debug-drag-handle">⠿</span>
+        <span>🛠 诊断监控台</span>
+      </div>
+      <div class="debug-actions">
+        <button type="button" class="debug-btn-icon" id="debugToggleCollapse" title="折叠/展开">−</button>
+        <button type="button" class="debug-btn-icon" id="debugClosePanel" title="关闭">&times;</button>
+      </div>
+    </div>
+    <div class="debug-panel-body" id="debugPanelBody">
+      <!-- 1. 剪贴板检测 -->
+      <div class="debug-section">
+        <div class="debug-section-title">1. 手机剪贴板当前状态</div>
+        <input type="text" id="debugPasteInput" class="debug-paste-input" placeholder="👉 长按此框选择【粘贴】 👈" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="debug-btn-row">
+          <button type="button" class="debug-btn" id="debugBtnTestWrite" style="background: rgba(248, 81, 73, 0.2); border-color: rgba(248, 81, 73, 0.4); color: #f85149;">写入 TEST-8888</button>
+          <button type="button" class="debug-btn" id="debugBtnReadClip">API 读取</button>
+        </div>
+        <div id="debugClipResult" class="debug-clip-result" style="display: none;">
+          <div>剪贴板文本：<b id="debugClipVal" style="color: var(--primary-color);">--</b></div>
+          <div id="debugClipMeta" style="font-size: 10px; color: #8b949e; margin-top: 2px;">--</div>
+        </div>
+      </div>
+
+      <!-- 2. 数据集实时提取码 -->
+      <div class="debug-section">
+        <div class="debug-section-title">2. 内存数据集提取码</div>
+        <div id="debugDatasetsList" class="debug-datasets-list"></div>
+      </div>
+
+      <!-- 3. 实时操作日志 -->
+      <div class="debug-section">
+        <div class="debug-section-title">
+          <span>3. 实时复制日志</span>
+          <a href="#" id="debugClearLogs" style="color: var(--primary-color); font-size: 11px; text-decoration: none;">清空</a>
+        </div>
+        <div id="debugLogBox" class="debug-log-box"></div>
       </div>
     </div>
   </div>
@@ -1313,29 +1537,19 @@
       return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    async function copyTextToClipboard(text) {
+    function copyTextToClipboard(text) {
       if (!text) return false;
+      let success = false;
 
-      // 1. 优先使用 iOS Safari 13.4+ 及现代移动端原生支持的标准异步 Clipboard API
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        try {
-          await navigator.clipboard.writeText(text);
-          return true;
-        } catch (e) {}
-      }
-
-      // 2. 同步选区保底方案（严格遵循 iOS WebKit 兼容标准）
+      // 1. 核心关键：必须在用户手势的同步时序（第 0 毫秒）内执行物理选区复制！
+      // 绝不可先 await 任何异步 Promise，否则 iOS WebKit 会判定用户手势已过期，直接封杀后续的 execCommand！
       try {
         const ta = document.createElement('textarea');
         ta.value = text;
-        // iOS 关键适配规范：
-        // ① 绝不设置 readonly，否则在 iOS Safari 下 select() 和 setSelectionRange 会静默失效
-        // ② 字体必须 >= 16px，防止触发页面自动缩放
-        // ③ 置于顶层可见视口（z-index: 99999），避免被 WebKit 当成不可见元素拒绝复制
         ta.style.fontSize = '16px';
         ta.style.position = 'fixed';
-        ta.style.top = '10px';
-        ta.style.left = '10px';
+        ta.style.top = '0';
+        ta.style.left = '0';
         ta.style.width = '20px';
         ta.style.height = '20px';
         ta.style.padding = '0';
@@ -1344,19 +1558,32 @@
         ta.style.boxShadow = 'none';
         ta.style.background = 'transparent';
         ta.style.opacity = '0.01';
-        ta.style.zIndex = '99999';
+        ta.style.zIndex = '999999';
         ta.style.pointerEvents = 'none';
         document.body.appendChild(ta);
 
         ta.focus();
         ta.select();
         ta.setSelectionRange(0, ta.value.length);
-        const res = document.execCommand('copy');
+        success = document.execCommand('copy');
         document.body.removeChild(ta);
-        return res;
+        if (window.debugLog) window.debugLog(`[同步选区] 复制 "${text}" 结果: ${success}`, success ? 'success' : 'error');
       } catch (err) {
-        return false;
+        if (window.debugLog) window.debugLog(`[同步选区异常] ${err.message}`, 'error');
       }
+
+      // 2. 并在第 0 毫秒同步触发现代 Clipboard API 双重保险
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          navigator.clipboard.writeText(text).then(() => {
+            if (window.debugLog) window.debugLog(`[现代API] writeText 写入成功: "${text}"`, 'success');
+          }).catch(err => {
+            if (window.debugLog) window.debugLog(`[现代API] writeText 失败: ${err.message}`, 'error');
+          });
+        } catch (e) {}
+      }
+
+      return success;
     }
 
     function instantHidePopover() {
@@ -1447,10 +1674,11 @@
           // 彻底解决桌面端因新标签页打开导致原始标签页GPU缓存帧残留、切回页面时弹窗“闪烁显示再消失”的浏览器内核通病！
           pan123Btn.onpointerdown = instantHidePopover;
           pan123Btn.onmousedown = instantHidePopover;
-          pan123Btn.onclick = async (e) => {
+          pan123Btn.onclick = (e) => {
             e.stopPropagation();
             if (code1) {
-              await copyTextToClipboard(code1);
+              if (window.debugLog) window.debugLog(`[点击123按钮] 开始复制提取码: "${code1}"`, 'info');
+              copyTextToClipboard(code1);
             }
             instantHidePopover();
             closeDownloadMenu();
@@ -1458,7 +1686,7 @@
               e.preventDefault();
               setTimeout(() => {
                 window.location.href = dataset.url;
-              }, 60);
+              }, 100);
             }
             // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页，不经由 window.open 挂起渲染管线
           };
@@ -1481,10 +1709,11 @@
 
           panBaiduBtn.onpointerdown = instantHidePopover;
           panBaiduBtn.onmousedown = instantHidePopover;
-          panBaiduBtn.onclick = async (e) => {
+          panBaiduBtn.onclick = (e) => {
             e.stopPropagation();
             if (code2) {
-              await copyTextToClipboard(code2);
+              if (window.debugLog) window.debugLog(`[点击百度按钮] 开始复制提取码: "${code2}"`, 'info');
+              copyTextToClipboard(code2);
             }
             instantHidePopover();
             closeDownloadMenu();
@@ -1492,7 +1721,7 @@
               e.preventDefault();
               setTimeout(() => {
                 window.location.href = dataset.url2;
-              }, 60);
+              }, 100);
             }
             // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页
           };
@@ -1755,17 +1984,224 @@
         }
       });
 
+      // ==========================================
+      // Sino-GDB 诊断台控制核心（5次连击左上角触发，支持拖拽与折叠）
+      // ==========================================
+      const debugPanel = document.getElementById('debugFloatingPanel');
+      const debugHeader = document.getElementById('debugPanelHeader');
+      const debugToggle = document.getElementById('debugToggleCollapse');
+      const debugClose = document.getElementById('debugClosePanel');
+      const debugPasteInput = document.getElementById('debugPasteInput');
+      const debugBtnTestWrite = document.getElementById('debugBtnTestWrite');
+      const debugBtnReadClip = document.getElementById('debugBtnReadClip');
+      const debugClipResult = document.getElementById('debugClipResult');
+      const debugClipVal = document.getElementById('debugClipVal');
+      const debugClipMeta = document.getElementById('debugClipMeta');
+      const debugDatasetsList = document.getElementById('debugDatasetsList');
+      const debugLogBox = document.getElementById('debugLogBox');
+      const debugClearLogs = document.getElementById('debugClearLogs');
+
+      window.debugLog = function(msg, type = 'info') {
+        if (!debugLogBox) return;
+        const line = document.createElement('div');
+        line.className = `log-line log-${type}`;
+        const timeStr = new Date().toTimeString().split(' ')[0] + '.' + String(Date.now() % 1000).padStart(3, '0');
+        line.textContent = `[${timeStr}] ${msg}`;
+        debugLogBox.appendChild(line);
+        debugLogBox.scrollTop = debugLogBox.scrollHeight;
+      };
+
+      if (debugClearLogs) {
+        debugClearLogs.addEventListener('click', (e) => {
+          e.preventDefault();
+          debugLogBox.innerHTML = '';
+        });
+      }
+
+      // 1. 拖拽逻辑（自适应桌面 Mouse 与移动端 Touch，限制在屏幕边界内）
+      let isDragging = false;
+      let dragStartX = 0, dragStartY = 0, panelStartX = 0, panelStartY = 0;
+
+      function handleDragStart(clientX, clientY) {
+        isDragging = true;
+        dragStartX = clientX;
+        dragStartY = clientY;
+        const rect = debugPanel.getBoundingClientRect();
+        panelStartX = rect.left;
+        panelStartY = rect.top;
+      }
+
+      function handleDragMove(clientX, clientY) {
+        if (!isDragging) return;
+        const dx = clientX - dragStartX;
+        const dy = clientY - dragStartY;
+        let newX = panelStartX + dx;
+        let newY = panelStartY + dy;
+        const maxW = window.innerWidth - debugPanel.offsetWidth;
+        const maxH = window.innerHeight - debugPanel.offsetHeight;
+        newX = Math.max(6, Math.min(newX, maxW - 6));
+        newY = Math.max(6, Math.min(newY, maxH - 6));
+        debugPanel.style.left = `${newX}px`;
+        debugPanel.style.top = `${newY}px`;
+      }
+
+      function handleDragEnd() {
+        isDragging = false;
+      }
+
+      if (debugHeader) {
+        debugHeader.addEventListener('mousedown', (e) => {
+          if (e.target.closest('.debug-actions')) return;
+          handleDragStart(e.clientX, e.clientY);
+          const onMouseMove = (ev) => handleDragMove(ev.clientX, ev.clientY);
+          const onMouseUp = () => {
+            handleDragEnd();
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+          };
+          window.addEventListener('mousemove', onMouseMove);
+          window.addEventListener('mouseup', onMouseUp);
+        });
+
+        debugHeader.addEventListener('touchstart', (e) => {
+          if (e.target.closest('.debug-actions')) return;
+          const t = e.touches[0];
+          handleDragStart(t.clientX, t.clientY);
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          const t = e.touches[0];
+          handleDragMove(t.clientX, t.clientY);
+        }, { passive: true });
+
+        window.addEventListener('touchend', handleDragEnd);
+      }
+
+      // 2. 折叠与关闭
+      if (debugToggle) {
+        debugToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          debugPanel.classList.toggle('collapsed');
+          debugToggle.textContent = debugPanel.classList.contains('collapsed') ? '+' : '−';
+        });
+      }
+
+      if (debugClose) {
+        debugClose.addEventListener('click', (e) => {
+          e.stopPropagation();
+          debugPanel.style.display = 'none';
+        });
+      }
+
+      // 3. 5次快速点击左上角 Sino-GDB 触发弹窗
+      const brandTitle = document.querySelector('.brand-title');
+      let brandClickCount = 0;
+      let lastBrandClickTime = 0;
+      if (brandTitle) {
+        brandTitle.addEventListener('click', () => {
+          const now = Date.now();
+          if (now - lastBrandClickTime < 900) {
+            brandClickCount++;
+          } else {
+            brandClickCount = 1;
+          }
+          lastBrandClickTime = now;
+
+          if (brandClickCount >= 5) {
+            brandClickCount = 0;
+            openDebugPanelUI();
+          }
+        });
+      }
+
+      function openDebugPanelUI() {
+        debugPanel.style.display = 'flex';
+        debugPanel.classList.remove('collapsed');
+        debugToggle.textContent = '−';
+        showBubble('🛠 已开启诊断监控台（可拖拽/折叠）', 1400);
+        window.debugLog('诊断台已开启，UA: ' + navigator.userAgent, 'info');
+        renderDebugDatasetsList();
+      }
+
+      function renderDebugDatasetsList() {
+        if (!debugDatasetsList) return;
+        debugDatasetsList.innerHTML = '';
+        datasets.forEach(ds => {
+          const row = document.createElement('div');
+          row.className = 'debug-ds-row';
+          row.innerHTML = `
+            <span>${ds.cn_name}</span>
+            <span>123码: <b style="color:var(--primary-color)">${ds.code1 || '无'}</b> | 百度: <b>${ds.code2 || '无'}</b></span>
+          `;
+          debugDatasetsList.appendChild(row);
+        });
+      }
+
+      // 4. 输入框粘贴检测
+      function inspectClipboardVal(val, source) {
+        if (!debugClipResult) return;
+        debugClipResult.style.display = 'block';
+        debugClipVal.textContent = val ? `"${val}"` : '(空)';
+        let hex = [];
+        for (let i = 0; i < val.length; i++) {
+          hex.push(val.charCodeAt(i).toString(16).toUpperCase());
+        }
+        debugClipMeta.textContent = `来源: ${source} | 长度: ${val.length} | Hex: ${hex.join(' ')}`;
+      }
+
+      if (debugPasteInput) {
+        debugPasteInput.addEventListener('paste', (e) => {
+          let text = '';
+          if (e.clipboardData && e.clipboardData.getData) {
+            text = e.clipboardData.getData('text');
+          }
+          setTimeout(() => {
+            const finalVal = text || debugPasteInput.value;
+            inspectClipboardVal(finalVal, '长按粘贴');
+            window.debugLog(`长按粘贴成功捕获: "${finalVal}" (长度: ${finalVal.length})`, (finalVal === 'X3' || finalVal === 'x3') ? 'error' : 'success');
+          }, 40);
+        });
+      }
+
+      // 5. 写入测试文本
+      if (debugBtnTestWrite) {
+        debugBtnTestWrite.addEventListener('click', () => {
+          window.debugLog('尝试写入测试文本 "TEST-8888"...', 'info');
+          const ok = copyTextToClipboard('TEST-8888');
+          inspectClipboardVal('TEST-8888', '写入 TEST-8888');
+          showBubble(ok ? '✓ 已写入 TEST-8888' : '⚠ 写入可能被拦截', 1400);
+        });
+      }
+
+      // 6. API 读取
+      if (debugBtnReadClip) {
+        debugBtnReadClip.addEventListener('click', async () => {
+          if (!navigator.clipboard || !navigator.clipboard.readText) {
+            window.debugLog('当前浏览器不支持 clipboard.readText()，请长按输入框选择粘贴！', 'error');
+            return;
+          }
+          try {
+            const text = await navigator.clipboard.readText();
+            window.debugLog(`API 读取到剪贴板: "${text}"`, 'success');
+            inspectClipboardVal(text, 'API 读取');
+          } catch (err) {
+            window.debugLog(`API 读取被拒: ${err.message}，请长按输入框粘贴！`, 'error');
+          }
+        });
+      }
+
       // 坚固拦截：杜绝 iOS / iPadOS Safari 任何整屏橡皮筋拖拽与弹性滚动
       document.addEventListener('touchmove', function (e) {
-        if (e.target.closest('.datasets-grid') || e.target.closest('.modal-content')) {
-          return; // 允许底部横向卡片导轨或弹窗内部正常划动
+        if (e.target.closest('.datasets-grid') || e.target.closest('.modal-content') || e.target.closest('#debugFloatingPanel')) {
+          return; // 允许底部横向卡片导轨、弹窗内部或诊断浮窗正常划动
         }
         e.preventDefault();
       }, { passive: false });
 
-      // 阻止非卡片导轨/弹窗区域的滚轮滚屏
+      // 阻止非卡片导轨/弹窗/诊断浮窗区域的滚轮滚屏
       window.addEventListener('wheel', function (e) {
-        if (e.target.closest('.datasets-grid') || e.target.closest('.modal-content')) {
+        if (e.target.closest('.datasets-grid') || e.target.closest('.modal-content') || e.target.closest('#debugFloatingPanel')) {
           return;
         }
         e.preventDefault();
