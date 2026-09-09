@@ -1336,9 +1336,30 @@
       }
     }
 
+    function instantHidePopover() {
+      const modal = document.getElementById('downloadMenuModal');
+      if (modal) {
+        modal.style.opacity = '0';
+        const pop = modal.querySelector('.card-popover');
+        if (pop) {
+          pop.style.animation = 'none';
+          pop.style.opacity = '0';
+          pop.style.transform = 'scale(0.96)';
+        }
+      }
+    }
+
     function closeDownloadMenu() {
       const modal = document.getElementById('downloadMenuModal');
-      if (modal) modal.style.display = 'none';
+      if (modal) {
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        const pop = modal.querySelector('.card-popover');
+        if (pop) {
+          pop.style.animation = 'none';
+          pop.style.opacity = '0';
+        }
+      }
       document.querySelectorAll('.dataset-card.active').forEach(c => c.classList.remove('active'));
     }
 
@@ -1353,22 +1374,9 @@
       }, duration);
     }
 
-    function navigateToPan(url, code) {
-      if (code) {
-        copyTextToClipboard(code);
-      }
-      closeDownloadMenu();
-      if (isMobileDevice()) {
-        // 移动端在当前标签页前进跳转，避免多开网页干扰，用户滑动/点击后退即可返回主页
-        window.location.href = url;
-      } else {
-        // 桌面端在新标签页打开
-        window.open(url, '_blank');
-      }
-    }
-
-    // 页面切出、失焦或通过前进/后退缓存（bfcache）返回时自动关闭下载弹窗
+    // 页面切出、失焦、切换回本页或通过前进/后退缓存（bfcache）返回时均确保下载弹窗处于彻底关闭状态
     window.addEventListener('blur', closeDownloadMenu);
+    window.addEventListener('focus', closeDownloadMenu);
     window.addEventListener('pageshow', closeDownloadMenu);
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) closeDownloadMenu();
@@ -1411,14 +1419,29 @@
           pan123Btn.rel = 'noopener noreferrer';
           const code1 = (dataset.code1 || '').trim();
           pan123Tip.textContent = code1 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
+
+          // 核心机制：在用户按下鼠标/触屏瞬间（pointerdown）提前让弹窗从视口和GPU合成器完全隐形
+          // 彻底解决桌面端因新标签页打开导致原始标签页GPU缓存帧残留、切回页面时弹窗“闪烁显示再消失”的浏览器内核通病！
+          pan123Btn.onpointerdown = instantHidePopover;
+          pan123Btn.onmousedown = instantHidePopover;
           pan123Btn.onclick = (e) => {
-            e.preventDefault();
             e.stopPropagation();
-            navigateToPan(dataset.url, code1);
+            if (code1) {
+              copyTextToClipboard(code1);
+            }
+            instantHidePopover();
+            closeDownloadMenu();
+            if (isMobileDevice()) {
+              e.preventDefault();
+              window.location.href = dataset.url;
+            }
+            // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页，不经由 window.open 挂起渲染管线
           };
         } else {
           pan123Btn.style.display = 'none';
           pan123Btn.removeAttribute('href');
+          pan123Btn.onpointerdown = null;
+          pan123Btn.onmousedown = null;
           pan123Btn.onclick = null;
         }
 
@@ -1430,14 +1453,27 @@
           panBaiduBtn.rel = 'noopener noreferrer';
           const code2 = (dataset.code2 || '').trim();
           panBaiduTip.textContent = code2 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
+
+          panBaiduBtn.onpointerdown = instantHidePopover;
+          panBaiduBtn.onmousedown = instantHidePopover;
           panBaiduBtn.onclick = (e) => {
-            e.preventDefault();
             e.stopPropagation();
-            navigateToPan(dataset.url2, code2);
+            if (code2) {
+              copyTextToClipboard(code2);
+            }
+            instantHidePopover();
+            closeDownloadMenu();
+            if (isMobileDevice()) {
+              e.preventDefault();
+              window.location.href = dataset.url2;
+            }
+            // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页
           };
         } else {
           panBaiduBtn.style.display = 'none';
           panBaiduBtn.removeAttribute('href');
+          panBaiduBtn.onpointerdown = null;
+          panBaiduBtn.onmousedown = null;
           panBaiduBtn.onclick = null;
         }
 
@@ -1451,7 +1487,15 @@
         }
       }
 
+      // 打开时重置弹窗透明度与动画
       modal.style.display = 'block';
+      modal.style.opacity = '1';
+      modal.style.pointerEvents = 'auto';
+      if (popover) {
+        popover.style.animation = '';
+        popover.style.opacity = '1';
+        popover.style.transform = '';
+      }
 
       // 准确定位在所点击卡片的正上方
       if (cardEl && popover) {
