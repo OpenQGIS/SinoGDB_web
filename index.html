@@ -1447,7 +1447,7 @@
           pan123Btn.target = mobile ? '_self' : '_blank';
           pan123Btn.rel = 'noopener noreferrer';
           const code1 = (dataset.code1 || '').trim();
-          pan123Tip.textContent = code1 ? `提取码: ${code1} · 自动复制下载` : '无需提取码 · 点击下载';
+          pan123Tip.textContent = code1 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
 
           // 核心机制：在用户按下鼠标/触屏瞬间（pointerdown）提前让弹窗从视口和GPU合成器完全隐形
           // 彻底解决桌面端因新标签页打开导致原始标签页GPU缓存帧残留、切回页面时弹窗“闪烁显示再消失”的浏览器内核通病！
@@ -1481,7 +1481,7 @@
           panBaiduBtn.target = mobile ? '_self' : '_blank';
           panBaiduBtn.rel = 'noopener noreferrer';
           const code2 = (dataset.code2 || '').trim();
-          panBaiduTip.textContent = code2 ? `提取码: ${code2} · 自动复制下载` : '无需提取码 · 点击下载';
+          panBaiduTip.textContent = code2 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
 
           panBaiduBtn.onpointerdown = instantHidePopover;
           panBaiduBtn.onmousedown = instantHidePopover;
