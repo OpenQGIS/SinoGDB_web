@@ -2,7 +2,10 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <link rel="icon" type="image/svg+xml" href="./icons/SinoGDB.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
@@ -32,12 +35,24 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
+    html {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
       overscroll-behavior: none;
       -webkit-overflow-scrolling: auto;
+      touch-action: none;
       background-color: var(--bg-dark);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: var(--text-main);
@@ -65,10 +80,11 @@
     .app-layout {
       position: fixed;
       inset: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
       overscroll-behavior: none;
+      touch-action: none;
       z-index: 1;
       display: flex;
       flex-direction: column;
@@ -222,6 +238,7 @@
       max-width: 1560px;
       margin: 0 auto;
       width: 100%;
+      touch-action: pan-x;
     }
 
     /* 卡片主体分为三大部分：顶部标题、圆角矩形、数据日期 (纯透极简风格) */
@@ -390,6 +407,7 @@
       padding: 1.2rem;
       overflow-y: auto;
       overscroll-behavior: contain;
+      touch-action: pan-y;
     }
 
     .modal-content {
@@ -1603,10 +1621,21 @@
         }
       });
 
-      window.addEventListener('resize', () => {
-        const downloadMenu = document.getElementById('downloadMenuModal');
-        if (downloadMenu) downloadMenu.style.display = 'none';
-      });
+      // 坚固拦截：杜绝 iOS / iPadOS Safari 任何整屏橡皮筋拖拽与弹性滚动
+      document.addEventListener('touchmove', function (e) {
+        if (e.target.closest('.datasets-grid') || e.target.closest('.modal-content')) {
+          return; // 允许底部横向卡片导轨或弹窗内部正常划动
+        }
+        e.preventDefault();
+      }, { passive: false });
+
+      // 阻止非卡片导轨/弹窗区域的滚轮滚屏
+      window.addEventListener('wheel', function (e) {
+        if (e.target.closest('.datasets-grid') || e.target.closest('.modal-content')) {
+          return;
+        }
+        e.preventDefault();
+      }, { passive: false });
 
       startCarousel();
     });
