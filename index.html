@@ -979,9 +979,16 @@
       margin-bottom: 0.4rem;
     }
 
+    @keyframes mobileTipFadeOut {
+      0%   { opacity: 1; }
+      70%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
     @media (max-width: 768px) {
       .mobile-tip {
         display: block;
+        animation: mobileTipFadeOut 5s ease forwards;
       }
     }
 
