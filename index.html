@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <link rel="shortcut icon" href="./favicon.ico">
   <link rel="manifest" href="./site.webmanifest">
-  <title>Sino-GDB 「九州」地理数据库</title>
+  <title id="pageTitle">Sino-GDB 「九州」地理数据库</title>
   <style>
     :root {
       --primary-color: #80cc28;
@@ -26,6 +26,62 @@
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
+      --ancient-font: "STKaiti", "KaiTi", "Songti SC", "SimSun", serif;
+    }
+
+    /* 古风典雅主题：竹青玉石绿、徽墨深黑、墨韵字体 */
+    body.theme-ancient {
+      --primary-color: #74b828;
+      --primary-hover: #8fd03b;
+      --primary-glow: rgba(116, 184, 40, 0.45);
+      --bg-dark: #0a0d13;
+      --panel-bg: rgba(14, 18, 25, 0.82);
+      --panel-border: rgba(116, 184, 40, 0.28);
+    }
+
+    /* 古风字体渗透 */
+    body.theme-ancient .brand-en-line,
+    body.theme-ancient .brand-cn-text,
+    body.theme-ancient .card-cn,
+    body.theme-ancient .nav-link,
+    body.theme-ancient .mobile-tip,
+    body.theme-ancient .modal-content h3,
+    body.theme-ancient .popover-header h3,
+    body.theme-ancient .ancient-seal {
+      font-family: var(--ancient-font);
+      letter-spacing: 0.05em;
+    }
+
+    /* 朱砂小印徽章 */
+    .ancient-seal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #b92b27;
+      background: rgba(185, 43, 39, 0.15);
+      color: #ea4335;
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1;
+      padding: 0.12rem 0.4rem;
+      border-radius: 4px;
+      letter-spacing: 0.15em;
+      margin-left: 0.45rem;
+      box-shadow: 0 0 10px rgba(185, 43, 39, 0.4);
+      user-select: none;
+      vertical-align: middle;
+      transition: all 0.25s ease;
+    }
+
+    .ancient-seal:hover {
+      background: rgba(185, 43, 39, 0.28);
+      box-shadow: 0 0 14px rgba(185, 43, 39, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* 古风环境光照微调 */
+    body.theme-ancient .app-layout {
+      background: radial-gradient(circle at center, rgba(145, 120, 80, 0.03) 0%, rgba(5, 7, 10, 0.52) 100%);
     }
 
     * {
@@ -67,7 +123,7 @@
       overflow: hidden;
       z-index: 0;
       pointer-events: none;
-      background: #0b0f14 url("./webp/0-4k固定底图.webp") center/cover no-repeat;
+      background: #0b0f14 url("./webp/base-4k.webp") center/cover no-repeat;
     }
 
     #mapCanvas {
@@ -1018,6 +1074,199 @@
       transform: translate(-50%, -10px);
     }
 
+    /* 古风彩蛋模态弹窗 (Plan B: 居中仪式感大弹窗) */
+    .egg-modal {
+      display: none;
+      z-index: 10000;
+    }
+
+    .egg-modal-content {
+      position: relative;
+      background-image:
+        radial-gradient(circle at 50% 15%, rgba(35, 18, 18, 0.96) 0%, rgba(13, 17, 23, 0.98) 100%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      border: 1.5px solid rgba(185, 43, 39, 0.65);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(185, 43, 39, 0.28);
+      border-radius: 20px;
+      max-width: 480px;
+      width: calc(100vw - 36px);
+      padding: 2.2rem 2rem 2rem;
+      text-align: center;
+      color: #e6edf3;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: eggModalIn 0.36s cubic-bezier(0.18, 0.89, 0.32, 1.25);
+    }
+
+    @keyframes eggModalIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .egg-modal-close {
+      position: absolute;
+      top: 1.1rem;
+      right: 1.25rem;
+      color: #8b949e;
+      font-size: 1.6rem;
+      cursor: pointer;
+      transition: color 0.2s ease, transform 0.2s ease;
+      line-height: 1;
+    }
+
+    .egg-modal-close:hover {
+      color: #ea4335;
+      transform: rotate(90deg);
+    }
+
+    .egg-modal-header {
+      margin-bottom: 1.2rem;
+    }
+
+    .egg-modal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .egg-modal-seal {
+      background: rgba(185, 43, 39, 0.25);
+      border: 1.5px solid #b92b27;
+      color: #ea4335;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.15em;
+      font-family: var(--ancient-font, serif);
+      user-select: none;
+    }
+
+    .egg-modal-subtitle {
+      font-size: 0.8rem;
+      color: #8b949e;
+      letter-spacing: 0.08em;
+      font-family: var(--ancient-font, serif);
+    }
+
+    .egg-modal-title {
+      font-family: var(--ancient-font, serif);
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #f0f6fc;
+      margin: 0.2rem 0 0.25rem;
+      text-shadow: 0 0 16px rgba(143, 208, 59, 0.4);
+    }
+
+    .egg-modal-realm {
+      font-family: var(--ancient-font, serif);
+      font-size: 0.95rem;
+      color: #8fd03b;
+      letter-spacing: 0.18em;
+      margin-bottom: 0.3rem;
+    }
+
+    .egg-modal-body {
+      text-align: left;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #c9d1d9;
+    }
+
+    .egg-lead {
+      text-align: center;
+      color: #e6edf3;
+      font-size: 0.96rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .egg-feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .egg-feature-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .egg-feat-badge {
+      background: rgba(143, 208, 59, 0.16);
+      border: 1px solid rgba(143, 208, 59, 0.5);
+      color: #8fd03b;
+      font-size: 0.72rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-family: var(--ancient-font, serif);
+    }
+
+    .egg-feat-text {
+      color: #c9d1d9;
+    }
+
+    .egg-modal-poem {
+      text-align: center;
+      font-family: var(--ancient-font, serif);
+      font-size: 0.85rem;
+      color: rgba(143, 208, 59, 0.9);
+      letter-spacing: 0.14em;
+      padding: 0.4rem 0;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.25rem;
+    }
+
+    .egg-modal-footer {
+      display: flex;
+      justify-content: center;
+    }
+
+    .egg-enter-btn {
+      background: linear-gradient(135deg, #b92b27 0%, #851c19 100%);
+      color: #ffffff;
+      font-family: var(--ancient-font, serif);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 28px;
+      padding: 0.65rem 2.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(185, 43, 39, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: all 0.25s ease;
+      outline: none;
+    }
+
+    .egg-enter-btn:hover {
+      background: linear-gradient(135deg, #d3322d 0%, #9e221e 100%);
+      box-shadow: 0 6px 22px rgba(185, 43, 39, 0.6), 0 0 15px rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .egg-enter-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px rgba(185, 43, 39, 0.4);
+    }
+
     /* 可拖拽、可折叠移动端诊断面板 */
     .debug-panel {
       position: fixed;
@@ -1208,10 +1457,11 @@
   <div class="app-layout">
     <header>
       <h1 class="brand-title">
-        <div class="brand-en-line">Sino-GDB</div>
+        <div class="brand-en-line" id="brandEnLine">Sino-GDB</div>
         <div class="brand-cn-line">
-          <img class="brand-icon" src="./icons/SinoGDB.svg" alt="Sino-GDB 图标">
-          <span class="brand-cn-text">地理数据库</span>
+          <img class="brand-icon" id="brandIcon" src="./icons/SinoGDB.svg" alt="Sino-GDB 图标">
+          <span class="brand-cn-text" id="brandCnText">地理数据库</span>
+          <span class="ancient-seal" id="ancientSeal" style="display: none;" title="古风空间典籍">禹迹</span>
         </div>
       </h1>
       <div class="header-right">
@@ -1224,7 +1474,7 @@
 
     <div class="quick-nav">
       <div class="quick-nav-row">
-        <a class="nav-link" href="https://github.com/OpenQGIS/OMap-GeoDB-HELP/blob/main/README.md" target="_blank" rel="noopener noreferrer">使用帮助 Github</a>
+        <a class="nav-link" id="navHelpLink" href="https://github.com/OpenQGIS/OMap-GeoDB-HELP/blob/main/README.md" target="_blank" rel="noopener noreferrer">使用帮助 Github</a>
         <span class="nav-divider">|</span>
         <a class="nav-link" id="wechatLink" href="https://mp.weixin.qq.com/s/mKKr7ZtuMByY63s7_qKrdg" target="_blank" rel="noopener noreferrer">公众号</a>
       </div>
@@ -1239,7 +1489,7 @@
     </div>
 
     <div class="datasets-container">
-      <div class="mobile-tip">左右滑动浏览数据 · 轻触卡片预览图层</div>
+      <div class="mobile-tip" id="mobileTip">左右滑动浏览数据 · 轻触卡片预览图层</div>
       <div class="datasets-grid" id="datasetsGrid">
         <!-- 由 datasets.md 动态解析渲染 -->
       </div>
@@ -1250,13 +1500,15 @@
   <div id="copyrightModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
-      <h3>版权声明与使用协议</h3>
-      <p>本数据集内容全部源自全球最大的开源地理数据库 OpenStreetMap（OSM），数据仅供个人学习或非商业用途。使用者需知悉并同意：</p>
-      <ul>
-        <li><strong>使用风险：</strong>数据可能存在误差、缺失或过时，提供者不对其准确性、适用性作任何担保。</li>
-        <li><strong>免责范围：</strong>本数据仅供个人学习免费使用，未从中获取商业利益。提供者不对使用者的任何使用后果承担责任。使用者应自行确保其使用行为符合相关法律法规。</li>
-        <li><strong>修改与终止：</strong>提供者保留随时修改、暂停或终止数据分享的权利。</li>
-      </ul>
+      <h3 id="copyrightModalTitle">版权声明与使用协议</h3>
+      <div id="copyrightModalBody">
+        <p>本数据集内容全部源自全球最大的开源地理数据库 OpenStreetMap（OSM），数据仅供个人学习或非商业用途。使用者需知悉并同意：</p>
+        <ul>
+          <li><strong>使用风险：</strong>数据可能存在误差、缺失或过时，提供者不对其准确性、适用性作任何担保。</li>
+          <li><strong>免责范围：</strong>本数据仅供个人学习免费使用，未从中获取商业利益。提供者不对使用者的任何使用后果承担责任。使用者应自行确保其使用行为符合相关法律法规。</li>
+          <li><strong>修改与终止：</strong>提供者保留随时修改、暂停或终止数据分享的权利。</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -1264,11 +1516,47 @@
   <div id="downloadModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
-      <h3>九州数据库 7 合 1 合集下载</h3>
+      <h3 id="downloadModalTitle">九州数据库 7 合 1 合集下载</h3>
       <p class="modal-highlight">
         <span>官方交流 QQ 群：</span> 1046270930
       </p>
-      <p style="text-align: center; color: #8b949e; font-size: 0.9rem;">入群即可在群文件中获取全套完整离线数据包及更新通知。</p>
+      <p style="text-align: center; color: #8b949e; font-size: 0.9rem;" id="downloadModalDesc">入群即可在群文件中获取全套完整离线数据包及更新通知。</p>
+    </div>
+  </div>
+
+  <!-- 九州山河卷 秘境奇遇模态弹窗 (Plan B: 居中仪式感大弹窗) -->
+  <div id="eggModal" class="modal egg-modal">
+    <div class="modal-content egg-modal-content">
+      <span class="close egg-modal-close" id="eggModalClose">&times;</span>
+      <div class="egg-modal-header">
+        <div class="egg-modal-badge">
+          <span class="egg-modal-seal">机缘</span>
+          <span class="egg-modal-subtitle">天机奇遇 · 空间秘境</span>
+        </div>
+        <h3 class="egg-modal-title">九州山河卷</h3>
+        <div class="egg-modal-realm">全要素空间舆地图鉴</div>
+      </div>
+      <div class="egg-modal-body">
+        <p class="egg-lead">
+          恭喜少侠参透天地玄机，已成功解锁隐藏东方舆地图鉴！
+        </p>
+        <div class="egg-feature-list">
+          <div class="egg-feature-row">
+            <span class="egg-feat-badge">典籍</span>
+            <div class="egg-feat-text">八大现代空间体系化作古风图卷，重现华夏山河万象。</div>
+          </div>
+          <div class="egg-feature-row">
+            <span class="egg-feat-badge">点染</span>
+            <div class="egg-feat-text">左右滑动舒展画卷，轻触玉牌点染地理要素。</div>
+          </div>
+        </div>
+        <div class="egg-modal-poem">
+          「 禹迹茫茫，山川维夏；九域万里，尽入斯卷。 」
+        </div>
+      </div>
+      <div class="egg-modal-footer">
+        <button type="button" class="egg-enter-btn" id="eggModalEnterBtn">入卷领略</button>
+      </div>
     </div>
   </div>
 
@@ -1380,8 +1668,96 @@
         this.fadeSpeed = 0.08;
         this.aspectRatio = 1.77603;
         this.animating = false;
+        this.paperPattern = null;
+        this.initPaperTexture();
 
         this.init();
+      }
+
+      initPaperTexture() {
+        try {
+          const pSize = 320;
+          const pCanvas = document.createElement('canvas');
+          pCanvas.width = pSize;
+          pCanvas.height = pSize;
+          const pCtx = pCanvas.getContext('2d');
+          if (!pCtx) return;
+
+          pCtx.clearRect(0, 0, pSize, pSize);
+
+          // 每次访问或刷新，动态生成专属随机种子，实现“一卷一纸一乾坤，张张皆不同”的手作宣纸独特性
+          let seed = (Date.now() ^ (Math.random() * 0x10000000)) >>> 0;
+          function rnd() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+          }
+
+          // 1. 宣纸细密横向竹帘捞纸横纹 (每 4px 一条温润竹帘线，带随机相位)
+          const yOffset = rnd() * 4;
+          pCtx.fillStyle = 'rgba(235, 205, 145, 0.12)';
+          for (let y = yOffset; y < pSize; y += 4) {
+            pCtx.fillRect(0, y, pSize, 1.2);
+          }
+
+          // 2. 宣纸纵向竹丝暗骨纹 (每 36px 一道挺括经线，带随机相位)
+          const xOffset = rnd() * 36;
+          pCtx.fillStyle = 'rgba(235, 205, 145, 0.09)';
+          for (let x = xOffset; x < pSize; x += 36) {
+            pCtx.fillRect(x, 0, 1.4, pSize);
+          }
+
+          // 3. 宣纸原浆植物长短纤维丝 (每次数量与分布各异，散落天然纤维)
+          pCtx.strokeStyle = 'rgba(245, 220, 170, 0.26)';
+          pCtx.lineWidth = 1.2;
+          const fiberCount = 120 + Math.floor(rnd() * 40);
+
+          pCtx.beginPath();
+          for (let i = 0; i < fiberCount; i++) {
+            const fx = rnd() * pSize;
+            const fy = rnd() * pSize;
+            const len = 6 + rnd() * 22;
+            const angle = (rnd() - 0.5) * 1.1;
+            pCtx.moveTo(fx, fy);
+            pCtx.quadraticCurveTo(
+              fx + Math.cos(angle) * (len * 0.5) + (rnd() - 0.5) * 4,
+              fy + Math.sin(angle) * (len * 0.5) + (rnd() - 0.5) * 4,
+              fx + Math.cos(angle) * len,
+              fy + Math.sin(angle) * len
+            );
+          }
+          pCtx.stroke();
+
+          // 4. 楮皮/草本杂质与颗粒斑驳点 (随机落位与半径)
+          pCtx.fillStyle = 'rgba(250, 225, 180, 0.32)';
+          const speckCount = 360 + Math.floor(rnd() * 80);
+          for (let i = 0; i < speckCount; i++) {
+            const px = rnd() * pSize;
+            const py = rnd() * pSize;
+            const r = rnd() < 0.8 ? 0.8 : (1.4 + rnd() * 0.6);
+            pCtx.beginPath();
+            pCtx.arc(px, py, r, 0, Math.PI * 2);
+            pCtx.fill();
+          }
+
+          // 5. 宣纸水墨微晕染絮团 (随机云絮与墨韵层次)
+          const cloudCount = 24 + Math.floor(rnd() * 12);
+          for (let i = 0; i < cloudCount; i++) {
+            const cx = rnd() * pSize;
+            const cy = rnd() * pSize;
+            const radius = 10 + rnd() * 26;
+            const grad = pCtx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+            grad.addColorStop(0, 'rgba(228, 196, 140, 0.12)');
+            grad.addColorStop(1, 'rgba(228, 196, 140, 0)');
+            pCtx.fillStyle = grad;
+            pCtx.beginPath();
+            pCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+            pCtx.fill();
+          }
+
+          this.paperPattern = this.ctx.createPattern(pCanvas, 'repeat');
+        } catch (e) {
+          console.warn('initPaperTexture failed:', e);
+        }
       }
 
       async init() {
@@ -1523,7 +1899,32 @@
           ctx.drawImage(baseImg, rx, ry, rw, rh);
         }
 
-        // 2. 绘制叠加图（无缝单图绘制，绝对零接缝、零提亮白边）
+        // 1.5 若处于古风彩蛋模式：在底图之上、数据层之下绘制强化宣纸纸张肌理 (手作温润触感)
+        if (isAncientTheme && this.paperPattern) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(rx, ry, rw, rh);
+          ctx.clip();
+
+          // A. 熟宣暖黄微润底调与古水墨暗角（使底图呈现古色宣纸长卷意境）
+          const radGrad = ctx.createRadialGradient(
+            rx + rw / 2, ry + rh / 2, rw * 0.05,
+            rx + rw / 2, ry + rh / 2, rw * 0.65
+          );
+          radGrad.addColorStop(0, 'rgba(198, 160, 95, 0.28)');
+          radGrad.addColorStop(0.5, 'rgba(56, 40, 22, 0.38)');
+          radGrad.addColorStop(1, 'rgba(10, 13, 18, 0.76)');
+          ctx.fillStyle = radGrad;
+          ctx.fillRect(rx, ry, rw, rh);
+
+          // B. 显式平铺强化纸张肌理 (手工竹帘纹、经纬骨、植物纤维丝与楮皮斑驳)
+          ctx.globalCompositeOperation = 'screen';
+          ctx.fillStyle = this.paperPattern;
+          ctx.fillRect(rx, ry, rw, rh);
+          ctx.restore();
+        }
+
+        // 2. 绘制叠加图（数据层严格位于纸张肌理之上，清晰纯净高亮点染）
         if (this.activeLayerKey && this.overlayAlpha > 0.01) {
           const overlayImg = this.getImage(this.activeLayerKey, this.currentLevel);
           if (overlayImg && overlayImg.complete && overlayImg.naturalWidth > 0) {
@@ -1646,6 +2047,21 @@
       if (document.hidden) closeDownloadMenu();
     });
 
+    // ==========================================
+    // 九州山河卷 · 全要素空间图鉴 古风映射体系
+    // ==========================================
+    const ANCIENT_LAYERS = {
+      AirSystem:  { ancient: '天路 · 飞鸿', sub: 'AirSystem' },
+      Buildings:  { ancient: '画栋 · 琼楼', sub: 'Buildings' },
+      LandSeries: { ancient: '原野 · 坤舆', sub: 'LandSeries' },
+      Power:      { ancient: '惊霆 · 飞光', sub: 'Power' },
+      Railways:   { ancient: '铁龙 · 辙道', sub: 'Railways' },
+      Roads:      { ancient: '通衢 · 驿路', sub: 'Roads' },
+      Transport:  { ancient: '车舆 · 驿站', sub: 'Transport' },
+      WaterDam:   { ancient: '沧浪 · 崇堰', sub: 'WaterDam' }
+    };
+    let isAncientTheme = true; // 默认开启古风模式
+
     function openDownloadMenu(dataset, cardEl) {
       const modal = document.getElementById('downloadMenuModal');
       const popover = modal.querySelector('.card-popover');
@@ -1658,14 +2074,17 @@
       const panBaiduBtn = document.getElementById('panBaiduBtn');
       const panBaiduTip = document.getElementById('panBaiduTip');
 
-      titleEl.textContent = `${dataset.cn_name} ${dataset.version || ''}`.trim();
+      const ancientInfo = isAncientTheme ? (ANCIENT_LAYERS[dataset.id] || ANCIENT_LAYERS[dataset.layer_key]) : null;
+      titleEl.textContent = ancientInfo
+        ? `${ancientInfo.ancient} (${dataset.cn_name}) ${dataset.version || ''}`.trim()
+        : `${dataset.cn_name} ${dataset.version || ''}`.trim();
 
       const hasUrl1 = !!(dataset.url && dataset.url.trim());
       const hasUrl2 = !!(dataset.url2 && dataset.url2.trim());
 
       // 1. 两个网盘都没有：显示筹备中状态
       if (!hasUrl1 && !hasUrl2) {
-        if (subDescEl) subDescEl.textContent = '暂未开放下载通道';
+        if (subDescEl) subDescEl.textContent = isAncientTheme ? '墨迹未干 · 卷册仍在整理筹备中' : '暂未开放下载通道';
         if (panOptions) panOptions.style.display = 'none';
         if (panEmptyState) panEmptyState.style.display = 'block';
       } else {
@@ -1691,10 +2110,12 @@
           pan123Btn.href = target123Url;
           pan123Btn.target = mobile ? '_self' : '_blank';
           pan123Btn.rel = 'noopener noreferrer';
-          pan123Tip.textContent = code1 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
+          const pan123NameEl = document.getElementById('pan123Name');
+          if (pan123NameEl) pan123NameEl.textContent = isAncientTheme ? '123云盘（免安装提货）' : '123云盘（免安装下载）';
+          pan123Tip.textContent = code1 
+            ? (isAncientTheme ? '自动收纳密匙·直取卷册' : '自动复制提取码·点击下载') 
+            : (isAncientTheme ? '免密直通·点击取卷' : '无需提取码·点击下载');
 
-          // 核心机制：在用户按下鼠标/触屏瞬间（pointerdown）提前让弹窗从视口和GPU合成器完全隐形
-          // 彻底解决桌面端因新标签页打开导致原始标签页GPU缓存帧残留、切回页面时弹窗“闪烁显示再消失”的浏览器内核通病！
           pan123Btn.onpointerdown = instantHidePopover;
           pan123Btn.onmousedown = instantHidePopover;
           pan123Btn.onclick = (e) => {
@@ -1702,6 +2123,9 @@
             if (code1) {
               if (window.debugLog) window.debugLog(`[点击123按钮] 开始复制提取码: "${code1}" (直通URL已挂载)`, 'info');
               copyTextToClipboard(code1);
+              if (isAncientTheme) {
+                showBubble('✓ 通关密匙已收录入袖，速启宝匣！', 1600);
+              }
             }
             instantHidePopover();
             closeDownloadMenu();
@@ -1711,7 +2135,6 @@
                 window.location.href = target123Url;
               }, 100);
             }
-            // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页，不经由 window.open 挂起渲染管线
           };
         } else {
           pan123Btn.style.display = 'none';
@@ -1729,7 +2152,11 @@
           panBaiduBtn.href = targetBaiduUrl;
           panBaiduBtn.target = mobile ? '_self' : '_blank';
           panBaiduBtn.rel = 'noopener noreferrer';
-          panBaiduTip.textContent = code2 ? '自动复制提取码·点击下载' : '无需提取码·点击下载';
+          const panBaiduNameEl = document.getElementById('panBaiduName');
+          if (panBaiduNameEl) panBaiduNameEl.textContent = isAncientTheme ? '百度网盘（备用通道）' : '百度网盘（备用通道）';
+          panBaiduTip.textContent = code2 
+            ? (isAncientTheme ? '自动收纳密匙·直取卷册' : '自动复制提取码·点击下载') 
+            : (isAncientTheme ? '免密直通·点击取卷' : '无需提取码·点击下载');
 
           panBaiduBtn.onpointerdown = instantHidePopover;
           panBaiduBtn.onmousedown = instantHidePopover;
@@ -1738,6 +2165,9 @@
             if (code2) {
               if (window.debugLog) window.debugLog(`[点击百度按钮] 开始复制提取码: "${code2}" (直通URL已挂载)`, 'info');
               copyTextToClipboard(code2);
+              if (isAncientTheme) {
+                showBubble('✓ 通关密匙已收录入袖，速启宝匣！', 1600);
+              }
             }
             instantHidePopover();
             closeDownloadMenu();
@@ -1747,7 +2177,6 @@
                 window.location.href = targetBaiduUrl;
               }, 100);
             }
-            // 桌面端：由原生 <a href="..." target="_blank"> 原生打开新标签页
           };
         } else {
           panBaiduBtn.style.display = 'none';
@@ -1760,9 +2189,9 @@
         // 提示副标题文案自适应
         if (subDescEl) {
           if (hasUrl1 && hasUrl2) {
-            subDescEl.textContent = '请选择网盘通道，点击自动复制提取码';
+            subDescEl.textContent = isAncientTheme ? '请选定储匮通道，点击即自动收纳通关密匙' : '请选择网盘通道，点击自动复制提取码';
           } else {
-            subDescEl.textContent = '点击直达网盘，自动复制提取码';
+            subDescEl.textContent = isAncientTheme ? '点击直达储匮，自动收纳通关密匙' : '点击直达网盘，自动复制提取码';
           }
         }
       }
@@ -1871,58 +2300,88 @@
       let intervalId = null;
       const duration = 2400;
 
-      // 构建卡片 DOM：三大部分结构 (顶部标题, 圆角矩形, 数据日期)
-      datasets.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'dataset-card';
-        card.dataset.url = item.url || '';
-        card.dataset.layer = item.layer_key || item.id || '';
-        card.dataset.index = index;
+      const urlParams = new URLSearchParams(window.location.search);
+      const tp = (urlParams.get('theme') || urlParams.get('mode') || '').toLowerCase();
+      const ep = urlParams.get(atob('ZWdn'));
 
-        // 版本号如果存在或非空
-        const verHtml = item.version ? `<span class="card-ver">${item.version}</span>` : '';
+      if (tp === atob('d3V4aWE=') || ep === '1') {
+        isAncientTheme = true;
+      } else if (tp === 'modern' || tp === 'normal') {
+        isAncientTheme = false;
+      } else {
+        const s = sessionStorage.getItem('_sgdb_pref');
+        if (s === '1') {
+          isAncientTheme = true;
+        } else if (s === '0') {
+          isAncientTheme = false;
+        } else {
+          const isLucky = Math.random() < 0.02;
+          isAncientTheme = isLucky;
+          try {
+            sessionStorage.setItem('_sgdb_pref', isLucky ? '1' : '0');
+          } catch (e) {}
+        }
+      }
 
-        card.innerHTML = `
-          <!-- 1. 顶部标题：英文名，中文名+版本号整体居中 -->
-          <div class="card-header">
-            <div class="card-en">${item.en_name || item.id}</div>
-            <div class="card-cn-ver-combo">
-              <span class="card-cn">${item.cn_name}</span>${verHtml}
+      function renderCards() {
+        grid.innerHTML = '';
+        datasets.forEach((item, index) => {
+          const card = document.createElement('div');
+          card.className = 'dataset-card';
+          card.dataset.url = item.url || '';
+          card.dataset.layer = item.layer_key || item.id || '';
+          card.dataset.index = index;
+
+          const verHtml = item.version ? `<span class="card-ver">${item.version}</span>` : '';
+          const ancientInfo = isAncientTheme ? (ANCIENT_LAYERS[item.id] || ANCIENT_LAYERS[item.layer_key]) : null;
+
+          const topName = isAncientTheme && ancientInfo ? ancientInfo.sub : (item.en_name || item.id);
+          const mainName = isAncientTheme && ancientInfo ? ancientInfo.ancient : item.cn_name;
+
+          // 核心修复：优先使用纯英文文件名以规避非ASCII URL解析失败裂图，并配双重fallback
+          const iconSrc = `./icons/${item.id}.svg`;
+          const fallbackIcon = encodeURI(item.icon);
+
+          card.innerHTML = `
+            <!-- 1. 顶部标题：英文名，中文名+版本号整体居中 -->
+            <div class="card-header">
+              <div class="card-en">${topName}</div>
+              <div class="card-cn-ver-combo">
+                <span class="card-cn">${mainName}</span>${verHtml}
+              </div>
             </div>
-          </div>
 
-          <!-- 2. 圆角矩形图标 -->
-          <div class="card-icon-box">
-            <img src="${item.icon}" alt="${item.cn_name}">
-          </div>
+            <!-- 2. 圆角矩形图标 (双保险防裂图) -->
+            <div class="card-icon-box">
+              <img src="${iconSrc}" alt="${item.cn_name}" onerror="this.onerror=null; this.src='${fallbackIcon}';">
+            </div>
 
-          <!-- 3. 数据日期 -->
-          <div class="card-date">${item.date}</div>
-        `;
+            <!-- 3. 数据日期 -->
+            <div class="card-date">${item.date}</div>
+          `;
 
-        card.addEventListener('mouseenter', () => {
-          stopCarousel();
-          setActiveCard(card);
-          engine.setOverlay(item.layer_key || item.id, 0.7);
+          card.addEventListener('mouseenter', () => {
+            stopCarousel();
+            setActiveCard(card);
+            engine.setOverlay(item.layer_key || item.id, 0.7);
+          });
+
+          card.addEventListener('mouseleave', () => {
+            clearActiveCards();
+            engine.setOverlay(null, 0);
+            startCarousel();
+          });
+
+          card.addEventListener('click', function () {
+            stopCarousel();
+            setActiveCard(this);
+            engine.setOverlay(item.layer_key || item.id, 0.75);
+            openDownloadMenu(item, this);
+          });
+
+          grid.appendChild(card);
         });
-
-        card.addEventListener('mouseleave', () => {
-          clearActiveCards();
-          engine.setOverlay(null, 0);
-          startCarousel();
-        });
-
-        card.addEventListener('click', function () {
-          stopCarousel();
-          setActiveCard(this);
-          engine.setOverlay(item.layer_key || item.id, 0.75);
-          openDownloadMenu(item, this);
-        });
-
-        grid.appendChild(card);
-      });
-
-      const cardElements = document.querySelectorAll('.dataset-card');
+      }
 
       function setActiveCard(cardEl) {
         clearActiveCards();
@@ -1930,7 +2389,7 @@
       }
 
       function clearActiveCards() {
-        cardElements.forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.dataset-card').forEach(c => c.classList.remove('active'));
       }
 
       function updateCarousel() {
@@ -1952,6 +2411,86 @@
           clearInterval(intervalId);
           intervalId = null;
         }
+      }
+
+      // ==========================================
+      // 主题动态响应函数（隐式驱动，无可见切换挂饰）
+      // ==========================================
+      function applyTheme(ancient) {
+        isAncientTheme = ancient;
+        document.body.classList.toggle('theme-ancient', isAncientTheme);
+
+        const pageTitle = document.getElementById('pageTitle');
+        const brandEn = document.getElementById('brandEnLine');
+        const brandCn = document.getElementById('brandCnText');
+        const ancientSeal = document.getElementById('ancientSeal');
+        const navHelp = document.getElementById('navHelpLink');
+        const wechatLink = document.getElementById('wechatLink');
+        const copyrightBtn = document.getElementById('copyrightBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareButton');
+        const mobileTip = document.getElementById('mobileTip');
+        const copyrightTitle = document.getElementById('copyrightModalTitle');
+        const downloadTitle = document.getElementById('downloadModalTitle');
+        const downloadDesc = document.getElementById('downloadModalDesc');
+
+        if (isAncientTheme) {
+          if (pageTitle) pageTitle.textContent = '九州山河卷 · 全要素空间舆地图鉴 | Sino-GDB';
+          if (brandEn) brandEn.textContent = '九州山河卷';
+          if (brandCn) brandCn.textContent = '全要素空间舆地图鉴';
+          if (ancientSeal) ancientSeal.style.display = 'inline-flex';
+          if (navHelp) navHelp.textContent = '引路锦囊 Github';
+          if (wechatLink) wechatLink.textContent = '墨讯阁 (公众号)';
+          if (copyrightBtn) copyrightBtn.textContent = '修志明约';
+          if (downloadBtn) downloadBtn.textContent = '山河全匮 (合集)';
+          if (shareBtn) shareBtn.textContent = '飞鸽传柬';
+          if (mobileTip) mobileTip.textContent = '「 左右滑动卷舒山河 · 轻触玉牌点染图层 」';
+          if (copyrightTitle) copyrightTitle.textContent = '修志明约与开源公约';
+          if (downloadTitle) downloadTitle.textContent = '九州山河卷 7 合 1 全匮下载';
+          if (downloadDesc) downloadDesc.textContent = '入群即可在群宗卷中获取完整离线全套匮藏包及更新飞书。';
+        } else {
+          if (pageTitle) pageTitle.textContent = 'Sino-GDB 「九州」地理数据库';
+          if (brandEn) brandEn.textContent = 'Sino-GDB';
+          if (brandCn) brandCn.textContent = '地理数据库';
+          if (ancientSeal) ancientSeal.style.display = 'none';
+          if (navHelp) navHelp.textContent = '使用帮助 Github';
+          if (wechatLink) wechatLink.textContent = '公众号';
+          if (copyrightBtn) copyrightBtn.textContent = '版权说明';
+          if (downloadBtn) downloadBtn.textContent = '合集下载';
+          if (shareBtn) shareBtn.textContent = '分享 Sino-GDB';
+          if (mobileTip) mobileTip.textContent = '左右滑动浏览数据 · 轻触卡片预览图层';
+          if (copyrightTitle) copyrightTitle.textContent = '版权声明与使用协议';
+          if (downloadTitle) downloadTitle.textContent = '九州数据库 7 合 1 合集下载';
+          if (downloadDesc) downloadDesc.textContent = '入群即可在群文件中获取全套完整离线数据包及更新通知。';
+        }
+
+        renderCards();
+        if (engine) engine.requestRedraw();
+      }
+
+      // ==========================================
+      // 古风彩蛋模态弹窗 (Plan B: 居中仪式感大弹窗)
+      // ==========================================
+      function triggerEggModal() {
+        const eggModal = document.getElementById('eggModal');
+        if (eggModal) {
+          eggModal.style.display = 'flex';
+        }
+      }
+
+      applyTheme(isAncientTheme);
+
+      // 若成功触发彩蛋模式，延迟 350ms 优雅弹出秘境模态大弹窗
+      if (isAncientTheme) {
+        setTimeout(triggerEggModal, 350);
+      }
+
+      const eggEnterBtn = document.getElementById('eggModalEnterBtn');
+      if (eggEnterBtn) {
+        eggEnterBtn.addEventListener('click', () => {
+          const eggModal = document.getElementById('eggModal');
+          if (eggModal) eggModal.style.display = 'none';
+        });
       }
 
       const copyrightModal = document.getElementById('copyrightModal');
@@ -1977,9 +2516,11 @@
       if (shareBtn) {
         shareBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          const copyText = 'Sino-GDB「九州」地理数据库 https://his.lreept.space/openqgis/omap-geodb/';
+          const copyText = isAncientTheme
+            ? '《九州山河卷》全要素空间舆地图鉴 https://his.lreept.space/openqgis/omap-geodb/'
+            : 'Sino-GDB「九州」地理数据库 https://his.lreept.space/openqgis/omap-geodb/';
           navigator.clipboard.writeText(copyText).then(() => {
-            showBubble('✓ 官网链接已成功复制到剪贴板！', 1500);
+            showBubble(isAncientTheme ? '✓ 锦柬已收录入袖，速邀诸友共览！' : '✓ 官网链接已成功复制到剪贴板！', 1600);
           }).catch(() => {
             showBubble('⚠ 请手动复制：https://his.lreept.space/openqgis/omap-geodb/', 2000);
           });
