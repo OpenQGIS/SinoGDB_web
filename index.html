@@ -1738,22 +1738,22 @@
             pCtx.fillRect(x, 0, 1.3, pSize);
           }
 
-          // 4. 做旧效果【纤】：植物原浆天然长短纤维丝 (权重由 w_fiber 调控，数量、线条轨迹、角度全随机)
+          // 4. 做旧效果【纤】：植物原浆天然长短纤维丝 (数量减半，各向异性自然散落)
           const fiberAlpha = 0.12 + w_fiber * 0.55;
           pCtx.strokeStyle = `rgba(245, 220, 170, ${fiberAlpha.toFixed(3)})`;
-          pCtx.lineWidth = 0.9 + w_fiber * 1.2;
-          const fiberCount = Math.round(70 + w_fiber * 420);
+          pCtx.lineWidth = 0.8 + w_fiber * 0.8;
+          const fiberCount = Math.round(35 + w_fiber * 210); // 调整为原先的一半数量，疏密适中
 
           pCtx.beginPath();
           for (let i = 0; i < fiberCount; i++) {
             const fx = rnd() * pSize;
             const fy = rnd() * pSize;
-            const len = 5 + rnd() * (14 + w_fiber * 22);
-            const angle = (rnd() - 0.5) * 1.2;
+            const len = 4 + rnd() * (10 + w_fiber * 16);
+            const angle = rnd() * Math.PI * 2; // 全向自然交织散布，避免呈现单一斜线感
             pCtx.moveTo(fx, fy);
             pCtx.quadraticCurveTo(
-              fx + Math.cos(angle) * (len * 0.5) + (rnd() - 0.5) * 4,
-              fy + Math.sin(angle) * (len * 0.5) + (rnd() - 0.5) * 4,
+              fx + Math.cos(angle) * (len * 0.5) + (rnd() - 0.5) * 3,
+              fy + Math.sin(angle) * (len * 0.5) + (rnd() - 0.5) * 3,
               fx + Math.cos(angle) * len,
               fy + Math.sin(angle) * len
             );
