@@ -1685,38 +1685,64 @@
 
           pCtx.clearRect(0, 0, pSize, pSize);
 
-          // 每次访问或刷新，动态生成专属随机种子，实现“一卷一纸一乾坤，张张皆不同”的手作宣纸独特性
+          // 1. 动态生成随机种子（每次访问或刷新独一无二）
           let seed = (Date.now() ^ (Math.random() * 0x10000000)) >>> 0;
           function rnd() {
             seed = (seed * 9301 + 49297) % 233280;
             return seed / 233280;
           }
 
-          // 1. 宣纸细密横向竹帘捞纸横纹 (每 4px 一条温润竹帘线，带随机相位)
+          // 2. 六大做旧层基准权重体系 (Base Aesthetic Weights)
+          // [W_wash(底润墨韵), W_screen(竹帘帘骨), W_fiber(植物纤维), W_speck(楮皮杂质), W_cloud(水墨云絮)]
+          const baseWeights = [0.28, 0.20, 0.24, 0.16, 0.12];
+
+          // 总做旧强度受控区间：[0.92, 1.08]（基准为 1.0，加权总和在此区间内，确保始终维持统一的典雅复古品质）
+          const totalBudget = 0.92 + rnd() * 0.16;
+
+          // 各做旧层随机扰动因子 (0.68 ~ 1.32，实现各层强度与性格的丰富差异)
+          const perturbed = baseWeights.map(w => w * (0.68 + rnd() * 0.64));
+          const sumPerturbed = perturbed.reduce((a, b) => a + b, 0);
+
+          // 严格加权归一化：保证 sum(k) == totalBudget，完美实现“层强度各异，但总能量守恒在统一复古区间”
+          const k = perturbed.map(w => (w / sumPerturbed) * totalBudget);
+          const [k_wash, k_screen, k_fiber, k_speck, k_cloud] = k;
+
+          // 保存底润暗角做旧参数，供 draw() 动态调度
+          this.paperConfig = {
+            centerAlpha: (0.16 + k_wash * 0.40).toFixed(3),
+            midAlpha: (0.24 + k_wash * 0.44).toFixed(3),
+            edgeAlpha: (0.62 + k_wash * 0.46).toFixed(3),
+          };
+
+          // 3. 做旧层 A：手工横向竹帘捞纸横纹 (强度与不透明度由 k_screen 调控)
           const yOffset = rnd() * 4;
-          pCtx.fillStyle = 'rgba(235, 205, 145, 0.12)';
+          const hAlpha = 0.05 + k_screen * 0.30;
+          pCtx.fillStyle = `rgba(235, 205, 145, ${hAlpha.toFixed(3)})`;
           for (let y = yOffset; y < pSize; y += 4) {
-            pCtx.fillRect(0, y, pSize, 1.2);
+            pCtx.fillRect(0, y, pSize, 1.1);
           }
 
-          // 2. 宣纸纵向竹丝暗骨纹 (每 36px 一道挺括经线，带随机相位)
-          const xOffset = rnd() * 36;
-          pCtx.fillStyle = 'rgba(235, 205, 145, 0.09)';
-          for (let x = xOffset; x < pSize; x += 36) {
-            pCtx.fillRect(x, 0, 1.4, pSize);
+          // 做旧层 B：纵向竹丝帘骨经线 (微随机间距与不透明度)
+          const xStep = Math.round(32 + rnd() * 8);
+          const xOffset = rnd() * xStep;
+          const vAlpha = 0.04 + k_screen * 0.22;
+          pCtx.fillStyle = `rgba(235, 205, 145, ${vAlpha.toFixed(3)})`;
+          for (let x = xOffset; x < pSize; x += xStep) {
+            pCtx.fillRect(x, 0, 1.3, pSize);
           }
 
-          // 3. 宣纸原浆植物长短纤维丝 (每次数量与分布各异，散落天然纤维)
-          pCtx.strokeStyle = 'rgba(245, 220, 170, 0.26)';
-          pCtx.lineWidth = 1.2;
-          const fiberCount = 120 + Math.floor(rnd() * 40);
+          // 4. 做旧层 C：植物原浆天然长短纤维丝 (数量、粗细、透明度由 k_fiber 调控)
+          const fiberAlpha = 0.14 + k_fiber * 0.46;
+          pCtx.strokeStyle = `rgba(245, 220, 170, ${fiberAlpha.toFixed(3)})`;
+          pCtx.lineWidth = 1.0 + k_fiber * 0.7;
+          const fiberCount = Math.round(80 + k_fiber * 320); // 80 ~ 200+ 随机数量
 
           pCtx.beginPath();
           for (let i = 0; i < fiberCount; i++) {
             const fx = rnd() * pSize;
             const fy = rnd() * pSize;
-            const len = 6 + rnd() * 22;
-            const angle = (rnd() - 0.5) * 1.1;
+            const len = 5 + rnd() * (16 + k_fiber * 14);
+            const angle = (rnd() - 0.5) * 1.2;
             pCtx.moveTo(fx, fy);
             pCtx.quadraticCurveTo(
               fx + Math.cos(angle) * (len * 0.5) + (rnd() - 0.5) * 4,
@@ -1727,26 +1753,28 @@
           }
           pCtx.stroke();
 
-          // 4. 楮皮/草本杂质与颗粒斑驳点 (随机落位与半径)
-          pCtx.fillStyle = 'rgba(250, 225, 180, 0.32)';
-          const speckCount = 360 + Math.floor(rnd() * 80);
+          // 5. 做旧层 D：楮皮草本杂质与微糙颗粒 (数量、大小、透明度由 k_speck 调控)
+          const speckAlpha = 0.16 + k_speck * 0.55;
+          pCtx.fillStyle = `rgba(250, 225, 180, ${speckAlpha.toFixed(3)})`;
+          const speckCount = Math.round(220 + k_speck * 800); // 220 ~ 500+ 随机杂质点
           for (let i = 0; i < speckCount; i++) {
             const px = rnd() * pSize;
             const py = rnd() * pSize;
-            const r = rnd() < 0.8 ? 0.8 : (1.4 + rnd() * 0.6);
+            const r = rnd() < 0.82 ? (0.6 + k_speck * 0.4) : (1.2 + rnd() * (0.6 + k_speck * 0.7));
             pCtx.beginPath();
             pCtx.arc(px, py, r, 0, Math.PI * 2);
             pCtx.fill();
           }
 
-          // 5. 宣纸水墨微晕染絮团 (随机云絮与墨韵层次)
-          const cloudCount = 24 + Math.floor(rnd() * 12);
+          // 6. 做旧层 E：水墨云絮晕染斑驳 (云絮团数、尺寸、透明度由 k_cloud 调控)
+          const cloudAlpha = 0.05 + k_cloud * 0.22;
+          const cloudCount = Math.round(16 + k_cloud * 60); // 16 ~ 40+ 随机晕染团
           for (let i = 0; i < cloudCount; i++) {
             const cx = rnd() * pSize;
             const cy = rnd() * pSize;
-            const radius = 10 + rnd() * 26;
+            const radius = 8 + rnd() * (16 + k_cloud * 18);
             const grad = pCtx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-            grad.addColorStop(0, 'rgba(228, 196, 140, 0.12)');
+            grad.addColorStop(0, `rgba(228, 196, 140, ${cloudAlpha.toFixed(3)})`);
             grad.addColorStop(1, 'rgba(228, 196, 140, 0)');
             pCtx.fillStyle = grad;
             pCtx.beginPath();
@@ -1906,14 +1934,15 @@
           ctx.rect(rx, ry, rw, rh);
           ctx.clip();
 
-          // A. 熟宣暖黄微润底调与古水墨暗角（使底图呈现古色宣纸长卷意境）
+          // A. 熟宣暖黄微润底调与古水墨暗角 (由多层做旧权重系统动态调控)
+          const conf = this.paperConfig || { centerAlpha: '0.24', midAlpha: '0.34', edgeAlpha: '0.74' };
           const radGrad = ctx.createRadialGradient(
             rx + rw / 2, ry + rh / 2, rw * 0.05,
             rx + rw / 2, ry + rh / 2, rw * 0.65
           );
-          radGrad.addColorStop(0, 'rgba(198, 160, 95, 0.28)');
-          radGrad.addColorStop(0.5, 'rgba(56, 40, 22, 0.38)');
-          radGrad.addColorStop(1, 'rgba(10, 13, 18, 0.76)');
+          radGrad.addColorStop(0, `rgba(198, 160, 95, ${conf.centerAlpha})`);
+          radGrad.addColorStop(0.5, `rgba(56, 40, 22, ${conf.midAlpha})`);
+          radGrad.addColorStop(1, `rgba(10, 13, 18, ${conf.edgeAlpha})`);
           ctx.fillStyle = radGrad;
           ctx.fillRect(rx, ry, rw, rh);
 
