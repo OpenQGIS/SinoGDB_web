@@ -2338,25 +2338,29 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const tp = (urlParams.get('theme') || urlParams.get('mode') || '').toLowerCase();
-      const ep = urlParams.get(atob('ZWdn'));
+      const ep = (urlParams.get(atob('ZWdn')) || '').toLowerCase();
 
-      if (tp === atob('d3V4aWE=') || ep === '1') {
+      if (tp === atob('d3V4aWE=') || ep === '1' || ep === atob('d3V4aWE=')) {
+        // Explicit trigger via URL: persist for this session
+        try { sessionStorage.setItem('_sgdb_pref', '1'); } catch (e) {}
         isAncientTheme = true;
-      } else if (tp === 'modern' || tp === 'normal') {
+      } else if (tp === 'modern' || tp === 'normal' || ep === '0' || ep === 'modern') {
+        // Explicit modern override
+        try {
+          sessionStorage.setItem('_sgdb_pref', '0');
+          sessionStorage.removeItem('_sgdb_modal');
+        } catch (e) {}
         isAncientTheme = false;
       } else {
-        const s = sessionStorage.getItem('_sgdb_pref');
-        if (s === '1') {
-          isAncientTheme = true;
-        } else if (s === '0') {
-          isAncientTheme = false;
-        } else {
-          const isLucky = Math.random() < 0.02;
-          isAncientTheme = isLucky;
-          try {
-            sessionStorage.setItem('_sgdb_pref', isLucky ? '1' : '0');
-          } catch (e) {}
-        }
+        // Default plain visit: always strictly modern, clean any stale session flags
+        try {
+          const existing = sessionStorage.getItem('_sgdb_pref');
+          if (existing === '1') {
+            sessionStorage.removeItem('_sgdb_pref');
+            sessionStorage.removeItem('_sgdb_modal');
+          }
+        } catch (e) {}
+        isAncientTheme = false;
       }
 
       function renderCards() {
