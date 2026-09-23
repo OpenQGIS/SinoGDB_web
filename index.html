@@ -1033,18 +1033,20 @@
       font-size: 0.78rem;
       color: var(--text-muted);
       margin-bottom: 0.4rem;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
-    @keyframes mobileTipFadeOut {
-      0%   { opacity: 1; }
-      70%  { opacity: 1; }
-      100% { opacity: 0; }
+    .mobile-tip.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
 
     @media (max-width: 768px) {
       .mobile-tip {
         display: block;
-        animation: mobileTipFadeOut 5s ease forwards;
       }
     }
 
@@ -2811,6 +2813,41 @@
         }
         e.preventDefault();
       }, { passive: false });
+
+      // 移动端操作提示：未操作时常驻，用户开始操作后 3 秒文字平滑淡出消失
+      (function initMobileTipAutoDismiss() {
+        const mobileTip = document.getElementById('mobileTip');
+        if (!mobileTip) return;
+
+        let hasInteracted = false;
+        const events = ['pointerdown', 'touchstart', 'mousedown', 'keydown'];
+
+        function onFirstAction() {
+          if (hasInteracted) return;
+          hasInteracted = true;
+
+          events.forEach(evt => {
+            window.removeEventListener(evt, onFirstAction, { capture: true, passive: true });
+          });
+          const gridEl = document.getElementById('datasetsGrid');
+          if (gridEl) {
+            gridEl.removeEventListener('scroll', onFirstAction, { passive: true });
+          }
+
+          setTimeout(() => {
+            mobileTip.classList.add('fade-out');
+          }, 3000);
+        }
+
+        events.forEach(evt => {
+          window.addEventListener(evt, onFirstAction, { capture: true, passive: true });
+        });
+
+        const gridEl = document.getElementById('datasetsGrid');
+        if (gridEl) {
+          gridEl.addEventListener('scroll', onFirstAction, { passive: true });
+        }
+      })();
 
       startCarousel();
     });
