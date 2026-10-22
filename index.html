@@ -783,6 +783,11 @@
       .brand-cn-text {
         font-size: 1.12rem;
       }
+
+      /* 避免两行标题与快捷导航绝对定位产生重叠，安全下移留出呼吸空间 */
+      .quick-nav {
+        top: 24.5% !important;
+      }
     }
 
     @media (max-width: 768px) {
